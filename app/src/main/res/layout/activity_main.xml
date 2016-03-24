@@ -18,12 +18,9 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
-            <Switch
-                android:id="@+id/switchGps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/use_gps" />
+            <FrameLayout android:id="@id/update_location_acg_fragment_id"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"/>
 
             <Button
                 android:id="@+id/search_address_button"

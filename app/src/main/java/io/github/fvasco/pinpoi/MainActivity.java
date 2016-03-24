@@ -3,6 +3,8 @@ package io.github.fvasco.pinpoi;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,9 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,14 +22,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.acg.lib.ACGResourceAccessException;
+import com.acg.lib.impl.UpdateLocationACG;
+import com.acg.lib.listeners.ACGActivity;
+import com.acg.lib.listeners.ACGListeners;
+import com.acg.lib.listeners.ResourceAvailabilityListener;
+import com.acg.lib.model.Location;
+import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
+import io.github.fvasco.pinpoi.dao.PlacemarkDao;
+import io.github.fvasco.pinpoi.model.PlacemarkCollection;
+import io.github.fvasco.pinpoi.util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,20 +43,9 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
-import io.github.fvasco.pinpoi.dao.PlacemarkDao;
-import io.github.fvasco.pinpoi.model.PlacemarkCollection;
-import io.github.fvasco.pinpoi.util.BackupManager;
-import io.github.fvasco.pinpoi.util.Consumer;
-import io.github.fvasco.pinpoi.util.Coordinates;
-import io.github.fvasco.pinpoi.util.DebugUtil;
-import io.github.fvasco.pinpoi.util.DismissOnClickListener;
-import io.github.fvasco.pinpoi.util.LocationUtil;
-import io.github.fvasco.pinpoi.util.Util;
-
 
 public class MainActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener, LocationListener {
+        implements SeekBar.OnSeekBarChangeListener, ACGActivity {
 
     private static final int LOCATION_RANGE_ACCURACY = 100;
     private static final int LOCATION_TIME_ACCURACY = 2 * 60_000;
@@ -68,7 +59,6 @@ public class MainActivity extends AppCompatActivity
     private static final String PREFEFERNCE_GPS = "gps";
     private static final String PREFEFERNCE_ADDRESS = "address";
     private static final String PREFEFERNCE_SHOW_MAP = "displayMap";
-    private static final int PERMISSION_GPS_ON = 1;
     private static final int PERMISSION_CREATE_BACKUP = 10;
     private static final int PERMISSION_RESTORE_BACKUP = 11;
     /**
@@ -82,7 +72,6 @@ public class MainActivity extends AppCompatActivity
     private static final int RANGE_MAX_SHIFT = 195;
     private String selectedPlacemarkCategory;
     private PlacemarkCollection selectedPlacemarkCollection;
-    private LocationManager locationManager;
     private Button categoryButton;
     private Button collectionButton;
     private SeekBar rangeSeek;
@@ -92,10 +81,14 @@ public class MainActivity extends AppCompatActivity
     private CheckBox favouriteCheck;
     private CheckBox showMapCheck;
     private TextView rangeLabel;
-    private Switch switchGps;
     private Geocoder geocoder;
-    private Location lastLocation;
     private Future<?> futureSearchAddress;
+    private boolean locationEnabled = false;
+
+    /**
+     * The Location ACG
+     */
+    private UpdateLocationACG locationACG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +96,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Util.initApplicationContext(getApplicationContext());
         geocoder = LocationUtil.getGeocoder();
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // widget
         categoryButton = (Button) findViewById(R.id.categoryButton);
@@ -115,8 +107,6 @@ public class MainActivity extends AppCompatActivity
         nameFilterText = (TextView) findViewById(R.id.name_filter_text);
         favouriteCheck = (CheckBox) findViewById(R.id.favouriteCheck);
         showMapCheck = (CheckBox) findViewById(R.id.showMapCheck);
-        switchGps = (Switch) findViewById(R.id.switchGps);
-        switchGps.setOnCheckedChangeListener(this);
         final Button searchAddressButton = (Button) findViewById(R.id.search_address_button);
         if (geocoder == null) {
             searchAddressButton.setVisibility(View.GONE);
@@ -129,7 +119,6 @@ public class MainActivity extends AppCompatActivity
 
         // restore preference
         final SharedPreferences preference = getPreferences(MODE_PRIVATE);
-        switchGps.setChecked(preference.getBoolean(PREFEFERNCE_GPS, false));
         latitudeText.setText(preference.getString(PREFEFERNCE_LATITUDE, "0"));
         longitudeText.setText(preference.getString(PREFEFERNCE_LONGITUDE, "0"));
         nameFilterText.setText(preference.getString(PREFEFERNCE_NAME_FILTER, null));
@@ -148,23 +137,35 @@ public class MainActivity extends AppCompatActivity
                 matcher = coordinatePattern.matcher(intentUri.getAuthority());
             }
             if (matcher.matches()) {
-                switchGps.setChecked(false);
                 latitudeText.setText(matcher.group(1));
                 longitudeText.setText(matcher.group(2));
             }
         }
+
+        // inflate the ACG
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        locationACG  = new UpdateLocationACG();
+        locationACG.setInterval(LOCATION_TIME_ACCURACY);
+        locationACG.setSmallestDisplacement(LOCATION_RANGE_ACCURACY);
+        fragmentTransaction.add(R.id.update_location_acg_fragment_id, locationACG);
+        fragmentTransaction.commit();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        setUseLocationManagerListener(switchGps.isChecked());
+
+        setLocationEnabled(locationEnabled);
+        setLocation(null);
+        Log.i(MainActivity.class.getSimpleName(), "locationACG.status " + locationEnabled);
     }
 
     @Override
     protected void onPause() {
         getPreferences(MODE_PRIVATE).edit()
-                .putBoolean(PREFEFERNCE_GPS, switchGps.isChecked())
+                .putBoolean(PREFEFERNCE_GPS, locationEnabled)
                 .putString(PREFEFERNCE_LATITUDE, latitudeText.getText().toString())
                 .putString(PREFEFERNCE_LONGITUDE, longitudeText.getText().toString())
                 .putString(PREFEFERNCE_NAME_FILTER, nameFilterText.getText().toString())
@@ -301,7 +302,7 @@ public class MainActivity extends AppCompatActivity
         if (futureSearchAddress != null) {
             futureSearchAddress.cancel(true);
         }
-        if (switchGps.isChecked()) {
+        if (locationEnabled) {
             // if gps on toast address
             futureSearchAddress = LocationUtil.getAddressStringAsync(new Coordinates(Float.parseFloat(latitudeText.getText().toString()),
                     Float.parseFloat(longitudeText.getText().toString())), new Consumer<String>() {
@@ -330,7 +331,7 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int which) {
                             try {
                                 // clear old coordinates
-                                onLocationChanged(null);
+                                setLocation(null);
                                 // search new location;
                                 final String address = editText.getText().toString();
                                 preference.edit().putString(PREFEFERNCE_ADDRESS, address).apply();
@@ -368,7 +369,7 @@ public class MainActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 final Address a = addresses.get(which);
-                                onLocationChanged(LocationUtil.newLocation(a.getLatitude(), a.getLongitude()));
+                                setLocation(LocationUtil.newLocation(a.getLatitude(), a.getLongitude()));
                             }
                         }).show();
             }
@@ -537,51 +538,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (switchGps == buttonView) {
-            setUseLocationManagerListener(isChecked);
-        }
-    }
-
-    private void setUseLocationManagerListener(final boolean on) {
-        boolean locationManagerListenerEnabled = false;
-        try {
-            if (on) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    setUseLocationManagerListener(false);
-                    onLocationChanged(null);
-                    for (final String provider : locationManager.getAllProviders()) {
-                        Log.i(MainActivity.class.getSimpleName(), "provider " + provider);
-                        // search updated location
-                        onLocationChanged(locationManager.getLastKnownLocation(provider));
-                        locationManager.requestLocationUpdates(provider, LOCATION_TIME_ACCURACY, LOCATION_RANGE_ACCURACY, this);
-                        locationManagerListenerEnabled = true;
-                    }
-                } else {
-                    // request permission
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_GPS_ON);
-                }
-            } else {
-                locationManager.removeUpdates(this);
-            }
-        } catch (SecurityException se) {
-            Util.showToast(se);
-        }
-        Log.i(MainActivity.class.getSimpleName(), "setUseLocationManagerListener.status " + locationManagerListenerEnabled);
-        switchGps.setChecked(locationManagerListenerEnabled);
-        latitudeText.setEnabled(!locationManagerListenerEnabled);
-        longitudeText.setEnabled(!locationManagerListenerEnabled);
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         final boolean granted = grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         switch (requestCode) {
-            case PERMISSION_GPS_ON:
-                setUseLocationManagerListener(granted);
-                break;
             case PERMISSION_CREATE_BACKUP:
                 if (granted) createBackup();
                 break;
@@ -591,40 +552,49 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Manage location update
-     *
-     * @param location new location
-     */
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onLocationChanged(Location location) {
+    protected void setLocation(Location location) {
         if (location == null) {
-            lastLocation = null;
             latitudeText.setText(null);
             longitudeText.setText(null);
         } else {
-            long minTime = System.currentTimeMillis() - LOCATION_TIME_ACCURACY;
-            if (location.getTime() >= minTime
-                    && (location.getAccuracy() <= LOCATION_RANGE_ACCURACY
-                    || lastLocation == null || lastLocation.getTime() <= minTime
-                    || lastLocation.getAccuracy() < location.getAccuracy())) {
-                lastLocation = location;
-                latitudeText.setText(Double.toString(location.getLatitude()));
-                longitudeText.setText(Double.toString(location.getLongitude()));
-            }
+            latitudeText.setText(Double.toString(location.getLatitude()));
+            longitudeText.setText(Double.toString(location.getLongitude()));
         }
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    protected void setLocationEnabled(boolean locationEnabled) {
+        latitudeText.setEnabled(!locationEnabled);
+        longitudeText.setEnabled(!locationEnabled);
+        this.locationEnabled = locationEnabled;
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
-    }
+    public ACGListeners buildACGListeners() {
+        return new ACGListeners.Builder().withResourceReadyListener(locationACG, new ResourceAvailabilityListener() {
+            /**
+             * Manage location update
+             */
+            @SuppressLint("SetTextI18n")
+            public void onResourceReady() {
+                if (!locationEnabled) {
+                    setLocationEnabled(true);
+                }
 
-    @Override
-    public void onProviderDisabled(String provider) {
+                try {
+                    Location location = locationACG.getResource();
+                    setLocation(location);
+                } catch (ACGResourceAccessException e) {
+                    setLocationEnabled(false);
+                    setLocation(null);
+                    Util.showToast(e);
+                }
+            }
+
+            @Override
+            public void onResourceUnavailable() {
+                setLocation(null);
+                setLocationEnabled(false);
+            }
+        }).build();
     }
 }

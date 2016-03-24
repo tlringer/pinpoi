@@ -4,29 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
+import com.acg.lib.model.Location;
+import io.github.fvasco.pinpoi.BuildConfig;
+import io.github.fvasco.pinpoi.PlacemarkDetailActivity;
+import io.github.fvasco.pinpoi.model.PlacemarkBase;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
-import io.github.fvasco.pinpoi.BuildConfig;
-import io.github.fvasco.pinpoi.PlacemarkDetailActivity;
-import io.github.fvasco.pinpoi.model.PlacemarkBase;
 
 /**
  * Location related utility
@@ -108,12 +102,12 @@ public class LocationUtil {
     }
 
     public static Location newLocation(double latitude, double longitude) {
-        final Location location = new Location(Util.class.getSimpleName());
+        final android.location.Location location = new android.location.Location(Util.class.getSimpleName());
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         location.setAccuracy(0);
         location.setTime(System.currentTimeMillis());
-        return location;
+        return new Location(location);
     }
 
     /**

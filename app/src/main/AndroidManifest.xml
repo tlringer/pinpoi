@@ -6,6 +6,7 @@
     <!-- import placemark -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- use gps to find location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- backup and restore -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
