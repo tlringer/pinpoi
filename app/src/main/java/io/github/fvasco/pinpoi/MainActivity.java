@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        setLocationEnabled(locationEnabled);
+        setLocationEnabled(false);
         setLocation(null);
         Log.i(MainActivity.class.getSimpleName(), "locationACG.status " + locationEnabled);
     }
@@ -592,8 +592,8 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onResourceUnavailable() {
-                setLocation(null);
                 setLocationEnabled(false);
+                setLocation(null);
             }
         }).build();
     }
