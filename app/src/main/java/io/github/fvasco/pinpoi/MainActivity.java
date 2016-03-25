@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (savedInstanceState == null) {
-            // inflate the ACG=
+            // inflate the ACG
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
