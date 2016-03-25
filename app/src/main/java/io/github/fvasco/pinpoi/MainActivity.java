@@ -142,15 +142,17 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // inflate the ACG
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (savedInstanceState == null) {
+            // inflate the ACG=
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        locationACG  = new UpdateLocationACG();
-        locationACG.setInterval(LOCATION_TIME_ACCURACY);
-        locationACG.setSmallestDisplacement(LOCATION_RANGE_ACCURACY);
-        fragmentTransaction.add(R.id.update_location_acg_fragment_id, locationACG);
-        fragmentTransaction.commit();
+            locationACG = new UpdateLocationACG();
+            locationACG.setInterval(LOCATION_TIME_ACCURACY);
+            locationACG.setSmallestDisplacement(LOCATION_RANGE_ACCURACY);
+            fragmentTransaction.add(R.id.update_location_acg_fragment_id, locationACG);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
