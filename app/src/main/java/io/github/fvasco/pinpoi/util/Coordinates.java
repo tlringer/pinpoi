@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.Source;
 import android.location.Location;
 import io.github.fvasco.pinpoi.model.Placemark;
 import sparta.checkers.quals.PolyFlow;
@@ -16,21 +17,21 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  * @author Francesco Vasco
  */
 public class Coordinates implements Cloneable {
-    public final @Sink({DATABASE, DISPLAY}) float latitude;
-    public final @Sink({DATABASE, DISPLAY}) float longitude;
+    public final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude;
+    public final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude;
 
-    public Coordinates(final @Sink({DATABASE, DISPLAY}) float latitude, final @Sink({DATABASE, DISPLAY}) float longitude) {
+    public Coordinates(final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude, final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     @PolyFlow
-    public static Coordinates fromPlacemark(Placemark placemark) {
+    public static @Source({}) Coordinates fromPlacemark(@Source({}) Placemark placemark) {
         return new Coordinates(placemark.getLatitude(), placemark.getLongitude());
     }
 
     @Override
-    public Object clone() {
+    public @Source({}) Object clone() {
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
@@ -39,7 +40,7 @@ public class Coordinates implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Source({}) Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinates that = (Coordinates) o;
@@ -69,13 +70,13 @@ public class Coordinates implements Cloneable {
     }
 
     public float distanceTo(Coordinates other) {
-        final float[] result = new float[1];
+        final @Source({}) float[] result = new float[1];
         Location.distanceBetween(latitude, longitude, other.latitude, other.longitude, result);
         return result[0];
     }
 
     @Override
-    public String toString() {
+    public @Source({"INTENT"}) String toString() {
         return Float.toString(latitude) + ',' + Float.toString(longitude);
     }
 }

@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.importer;
 
-import sparta.checkers.quals.Source;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,12 +9,12 @@ import io.github.fvasco.pinpoi.model.Placemark;
 /**
  * @author Francesco Vasco
  */
-public class GeoRssImporterTest extends @Source({}) AbstractImporterTestCase {
+public class GeoRssImporterTest extends AbstractImporterTestCase {
 
 
     @Test
-    public void testimportAtom(@Source({}) GeoRssImporterTest this) throws Exception {
-        final List<@Source({}) Placemark> list = importPlacemark(new GeoRssImporter(), "georss.atom.xml");
+    public void testimportAtom() throws Exception {
+        final List<Placemark> list = importPlacemark(new GeoRssImporter(), "georss.atom.xml");
 
         assertEquals(1, list.size());
 
@@ -27,8 +26,8 @@ public class GeoRssImporterTest extends @Source({}) AbstractImporterTestCase {
     }
 
     @Test
-    public void testimportRss(@Source({}) GeoRssImporterTest this) throws Exception {
-        final List<@Source({}) Placemark> list = importPlacemark(new GeoRssImporter(), "georss.rss.xml");
+    public void testimportRss() throws Exception {
+        final List<Placemark> list = importPlacemark(new GeoRssImporter(), "georss.rss.xml");
 
         assertEquals(1, list.size());
 

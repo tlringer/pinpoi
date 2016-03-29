@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.importer;
 
-import sparta.checkers.quals.Source;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,11 +9,11 @@ import io.github.fvasco.pinpoi.model.Placemark;
 /**
  * @author Francesco Vasco
  */
-public class GpxImporterTest extends @Source({}) AbstractImporterTestCase {
+public class GpxImporterTest extends AbstractImporterTestCase {
 
     @Test
-    public void testImportImpl(@Source({}) GpxImporterTest this) throws Exception {
-        final List<@Source({}) Placemark> list = importPlacemark(new GpxImporter(), "test.gpx");
+    public void testImportImpl() throws Exception {
+        final List<Placemark> list = importPlacemark(new GpxImporter(), "test.gpx");
 
         assertEquals(2, list.size());
 

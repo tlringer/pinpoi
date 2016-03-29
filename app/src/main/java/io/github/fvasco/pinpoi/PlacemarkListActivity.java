@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi;
 
+import sparta.checkers.quals.Source;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,34 +48,34 @@ import java.util.*;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class PlacemarkListActivity extends AppCompatActivity {
-    public static final String ARG_LATITUDE = "latitude";
-    public static final String ARG_LONGITUDE = "longitude";
-    public static final String ARG_RANGE = "range";
-    public static final String ARG_FAVOURITE = "favourite";
-    public static final String ARG_COLLECTION_IDS = "collectionIds";
-    public static final String ARG_NAME_FILTER = "nameFilter";
-    public static final String ARG_SHOW_MAP = "showMap";
-    private static final int PERMISSION_SHOW_MAP = 1;
+public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
+    public static final @Source({}) String ARG_LATITUDE = "latitude";
+    public static final @Source({}) String ARG_LONGITUDE = "longitude";
+    public static final @Source({}) String ARG_RANGE = "range";
+    public static final @Source({}) String ARG_FAVOURITE = "favourite";
+    public static final @Source({}) String ARG_COLLECTION_IDS = "collectionIds";
+    public static final @Source({}) String ARG_NAME_FILTER = "nameFilter";
+    public static final @Source({}) String ARG_SHOW_MAP = "showMap";
+    private static final @Source({}) int PERMISSION_SHOW_MAP = 1;
     // clockwise arrow
-    private static final char[] ARROWS = new char[]{
+    private static final @Source({}) char /*@Source({})*/ [] ARROWS = new /*@Source({})*/ char /*@Source({})*/ []{
            /*N*/ '\u2191', /*NE*/ '\u2197', /*E*/ '\u2192', /*SE*/ '\u2198',
            /*S*/ '\u2193', /*SW*/ '\u2199', /*W*/ '\u2190', /*NW*/ '\u2196'
     };
-    private WebView mapWebView;
-    private FloatingActionButton starFab;
-    private FloatingActionButton mapFab;
-    private RecyclerView recyclerView;
+    private @Source({}) WebView mapWebView;
+    private @Source({}) FloatingActionButton starFab;
+    private @Source({}) FloatingActionButton mapFab;
+    private @Source({}) RecyclerView recyclerView;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
-    private PlacemarkDao placemarkDao;
-    private long[] placemarkIdArray;
-    private PlacemarkDetailFragment fragment;
-    private Coordinates searchCoordinate;
-    private int range;
+    private @Source({}) boolean mTwoPane;
+    private @Source({}) PlacemarkDao placemarkDao;
+    private @Source({}) long /*@Source({})*/ [] placemarkIdArray;
+    private @Source({}) PlacemarkDetailFragment fragment;
+    private @Source({}) Coordinates searchCoordinate;
+    private @Source({"INTENT"}) int range;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +152,7 @@ public class PlacemarkListActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public @Source({}) boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
@@ -167,17 +168,17 @@ public class PlacemarkListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView(final @NonNull RecyclerView recyclerView) {
+    private void setupRecyclerView(final @NonNull @Source({}) RecyclerView recyclerView) {
         recyclerView.setVisibility(View.VISIBLE);
         final RecyclerView.Adapter oldAdapter = recyclerView.getAdapter();
         if (oldAdapter == null || oldAdapter.getItemCount() == 0) {
             final SimpleItemRecyclerViewAdapter adapter = new SimpleItemRecyclerViewAdapter();
             recyclerView.setAdapter(adapter);
-            searchPoi(new Consumer<Collection<PlacemarkSearchResult>>() {
+            searchPoi(new Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>>() {
                 @Override
-                public void accept(Collection<PlacemarkSearchResult> placemarks) {
+                public void accept(@Source({}) Collection</*@Source({})*/ PlacemarkSearchResult> placemarks) {
                     // create array in background thread
-                    final PlacemarkSearchResult[] placemarksArray =
+                    final @Source({}) PlacemarkSearchResult[] placemarksArray =
                             placemarks.toArray(new PlacemarkSearchResult[placemarks.size()]);
                     Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
                         @Override
@@ -190,7 +191,7 @@ public class PlacemarkListActivity extends AppCompatActivity {
         }
     }
 
-    private void searchPoi(final @NonNull Consumer<Collection<PlacemarkSearchResult>> placemarksConsumer) {
+    private void searchPoi(final @NonNull @Source({}) Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>> placemarksConsumer) {
         // load parameters
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
@@ -209,9 +210,10 @@ public class PlacemarkListActivity extends AppCompatActivity {
         final String nameFilterFinal = nameFilter;
 
         // read collections id or parse from preference
+        @Source({"INTENT"})
         long[] collectionIds = intent.getLongArrayExtra(ARG_COLLECTION_IDS);
         if (collectionIds == null) {
-            final Set<String> stringIds = preferences.getStringSet(ARG_COLLECTION_IDS, Collections.EMPTY_SET);
+            final Set</*@Source({})*/ String> stringIds = preferences.getStringSet(ARG_COLLECTION_IDS, Collections.EMPTY_SET);
             collectionIds = new long[stringIds.size()];
             int i = 0;
             for (final String id : stringIds) {
@@ -223,8 +225,8 @@ public class PlacemarkListActivity extends AppCompatActivity {
         // create string set of collection id
         // for preference
         // and deferred job
-        final Set<String> collectionIdSet = new TreeSet<>();
-        final List<Long> collectionIdList = new ArrayList<>(collectionIds.length);
+        final Set</*@Source({"INTENT"})*/ String> collectionIdSet = new TreeSet<>();
+        final List</*@Source({"INTENT"})*/ Long> collectionIdList = new ArrayList<>(collectionIds.length);
         for (final long id : collectionIds) {
             collectionIdList.add(id);
             collectionIdSet.add(String.valueOf(id));
@@ -245,7 +247,7 @@ public class PlacemarkListActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            final Collection<PlacemarkSearchResult> placemarks =
+                            final Collection</*@Source({})*/ PlacemarkSearchResult> placemarks =
                                     placemarkDao.findAllPlacemarkNear(searchCoordinate,
                                             range, nameFilterFinal, favourite, collectionIdList);
                             Log.d(PlacemarkListActivity.class.getSimpleName(), "searchPoi progress placemarks.size()=" + placemarks.size());
@@ -268,7 +270,7 @@ public class PlacemarkListActivity extends AppCompatActivity {
     }
 
     @JavascriptInterface
-    public void openPlacemark(final long placemarkId) {
+    public void openPlacemark(final @Source({}) long placemarkId) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putLong(PlacemarkDetailFragment.ARG_PLACEMARK_ID, placemarkId);
@@ -301,15 +303,15 @@ public class PlacemarkListActivity extends AppCompatActivity {
         fragment.resetStarFabIcon(starFab);
     }
 
-    public void onStarClick(final View view) {
+    public void onStarClick(final @Source({}) View view) {
         fragment.onStarClick(starFab);
     }
 
-    public void onMapClick(final View view) {
+    public void onMapClick(final @Source({}) View view) {
         fragment.onMapClick(view);
     }
 
-    private void setupWebView(final WebView mapWebView) {
+    private void setupWebView(final @Source({}) WebView mapWebView) {
         mapWebView.setVisibility(View.VISIBLE);
         mapWebView.addJavascriptInterface(this, "pinpoi");
         final WebSettings webSettings = mapWebView.getSettings();
@@ -322,9 +324,9 @@ public class PlacemarkListActivity extends AppCompatActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
         webSettings.setSupportMultipleWindows(false);
 
-        searchPoi(new Consumer<Collection<PlacemarkSearchResult>>() {
+        searchPoi(new Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>>() {
             @Override
-            public void accept(Collection<PlacemarkSearchResult> placemarksSearchResult) {
+            public void accept(/*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult> placemarksSearchResult) {
                 // this list helps to divide placemarks in category
                 final StringBuilder html = new StringBuilder(1024 + placemarksSearchResult.size() * 256);
                 final String leafletVersion = "0.7.7";
@@ -359,7 +361,7 @@ public class PlacemarkListActivity extends AppCompatActivity {
                 // mark placemark top ten :)
                 int placemarkPosition = 0;
                 // distance to placemark
-                final float[] floatArray = new float[1];
+                final @Source({}) float[] floatArray = new float[1];
                 final DecimalFormat decimalFormat = new DecimalFormat();
                 for (final PlacemarkSearchResult psr : placemarksSearchResult) {
                     ++placemarkPosition;
@@ -404,33 +406,33 @@ public class PlacemarkListActivity extends AppCompatActivity {
     }
 
     public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+            extends RecyclerView./*@Source({})*/ Adapter<SimpleItemRecyclerViewAdapter./*@Source({})*/ ViewHolder> {
 
-        private final DecimalFormat decimalFormat = new DecimalFormat();
-        private final StringBuilder stringBuilder = new StringBuilder();
-        private final float[] floatArray = new float[2];
-        private PlacemarkSearchResult[] placemarks;
+        private final @Source({}) DecimalFormat decimalFormat = new /*@Source({})*/ DecimalFormat();
+        private final @Source({}) StringBuilder stringBuilder = new /*@Source({})*/ StringBuilder();
+        private final @Source({}) float /*@Source({})*/ [] floatArray = new /*@Source({})*/ float /*@Source({})*/ [2];
+        private @Source({}) PlacemarkSearchResult /*@Source({})*/ [] placemarks;
 
         public SimpleItemRecyclerViewAdapter() {
             decimalFormat.setMinimumFractionDigits(1);
             decimalFormat.setMaximumFractionDigits(1);
         }
 
-        public void setPlacemarks(@NonNull final PlacemarkSearchResult[] placemarks) {
+        public void setPlacemarks(@NonNull final @Source({}) PlacemarkSearchResult /*@Source({})*/ [] placemarks) {
             Objects.requireNonNull(placemarks);
             this.placemarks = placemarks;
             notifyDataSetChanged();
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public @Source({}) ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(android.R.layout.simple_list_item_1, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final @Source({}) ViewHolder holder, int position) {
             final PlacemarkSearchResult placemark = placemarks[position];
             holder.placemark = placemark;
             Location.distanceBetween(searchCoordinate.latitude, searchCoordinate.longitude,
@@ -477,21 +479,21 @@ public class PlacemarkListActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemCount() {
+        public @Source({}) int getItemCount() {
             return placemarks == null ? 0 : placemarks.length;
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final TextView view;
-            public PlacemarkSearchResult placemark;
+        public class ViewHolder extends RecyclerView./*@Source({})*/ ViewHolder {
+            public final @Source({}) TextView view;
+            public @Source({}) PlacemarkSearchResult placemark;
 
-            public ViewHolder(View view) {
+            public ViewHolder(@Source({}) View view) {
                 super(view);
                 this.view = (TextView) view.findViewById(android.R.id.text1);
             }
 
             @Override
-            public String toString() {
+            public @Source({}) String toString() {
                 return super.toString() + " '" + placemark + "'";
             }
         }

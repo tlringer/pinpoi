@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.model;
 
+import sparta.checkers.quals.Source;
 import sparta.checkers.quals.Sink;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
@@ -12,13 +13,13 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  */
 public class PlacemarkCollection {
 
-    private @Sink(DATABASE) long id;
-    private @Sink({DATABASE, DISPLAY}) String name;
-    private @Sink({DATABASE, DISPLAY}) String description;
-    private @Sink({DATABASE, DISPLAY}) String category;
-    private @Sink({DATABASE, DISPLAY}) String source;
-    private @Sink({DATABASE, DISPLAY}) long lastUpdate;
-    private @Sink({DATABASE, DISPLAY}) int poiCount;
+    private @Sink(DATABASE) @Source({}) long id;
+    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String name;
+    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String description;
+    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String category;
+    private @Sink({DATABASE, DISPLAY}) @Source({}) String source;
+    private @Sink({DATABASE, DISPLAY}) @Source({"READ_TIME"}) long lastUpdate;
+    private @Sink({DATABASE, DISPLAY}) @Source({}) int poiCount;
 
     public @Sink({DATABASE, DISPLAY}) int getPoiCount() {
         return poiCount;
@@ -80,7 +81,7 @@ public class PlacemarkCollection {
     }
 
     @Override
-    public String toString() {
+    public @Source({"USER_INPUT"}) String toString() {
         return name;
     }
 }

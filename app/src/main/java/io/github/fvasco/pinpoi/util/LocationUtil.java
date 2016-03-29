@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.Source;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -32,9 +33,9 @@ public class LocationUtil {
     /**
      * Store resolved address
      */
-    private static final LruCache<Coordinates, String> ADDRESS_CACHE = new LruCache<>(512);
-    private static Geocoder geocoder;
-    private static volatile File addressCacheFile;
+    private static final @Source({}) LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String> ADDRESS_CACHE = new /*@Source({})*/ LruCache<>(512);
+    private static @Source({}) Geocoder geocoder;
+    private static volatile @Source({}) File addressCacheFile;
 
     private LocationUtil() {
     }
@@ -49,7 +50,7 @@ public class LocationUtil {
         }
     }
 
-    public static Geocoder getGeocoder() {
+    public static @Source({}) Geocoder getGeocoder() {
         init();
         return geocoder;
     }
@@ -61,13 +62,13 @@ public class LocationUtil {
             final Coordinates coordinates,
             final Consumer<String> addressConsumer) {
         Objects.requireNonNull(coordinates);
-        return Util.EXECUTOR.submit(new Callable<String>() {
+        return Util.EXECUTOR.submit(new Callable</*@Source({})*/ String>() {
             @Override
-            public String call() throws Exception {
+            public @Source({}) String call() throws Exception {
                 init();
                 String addressString = ADDRESS_CACHE.get(coordinates);
                 if (addressString == null) {
-                    List<Address> addresses;
+                    List</*@Source({})*/ Address> addresses;
                     try {
                         addresses = geocoder == null
                                 ? Collections.EMPTY_LIST
@@ -101,7 +102,7 @@ public class LocationUtil {
         });
     }
 
-    public static Location newLocation(double latitude, double longitude) {
+    public static @Source({}) Location newLocation(@Source({}) double latitude, @Source({}) double longitude) {
         final android.location.Location location = new android.location.Location(Util.class.getSimpleName());
         location.setLatitude(latitude);
         location.setLongitude(longitude);
@@ -113,7 +114,7 @@ public class LocationUtil {
     /**
      * Convert an {@linkplain Address} to address string
      */
-    public static String toString(Address address) {
+    public static @Source({}) String toString(@Source({}) Address address) {
         if (address == null) return null;
 
         final String separator = ", ";
@@ -189,7 +190,7 @@ public class LocationUtil {
         try (final DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(addressCacheFile))) {
             // first item is entry count
             outputStream.writeShort(ADDRESS_CACHE.size());
-            for (final Map.Entry<Coordinates, String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
+            for (final Map.Entry</*@Source({})*/ Coordinates, /*@Source({})*/ String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
                 final Coordinates coordinates = entry.getKey();
                 outputStream.writeFloat(coordinates.getLatitude());
                 outputStream.writeFloat(coordinates.getLongitude());

@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.Source;
 import android.location.Location;
 
 import java.util.Comparator;
@@ -12,8 +13,8 @@ import java.util.Objects;
  */
 public class DistanceComparator implements Comparator<Coordinates> {
 
-    private final Coordinates center;
-    private final float[] distanceResult = new float[1];
+    private final @Source({}) Coordinates center;
+    private final @Source({}) float /*@Source({})*/ [] distanceResult = new /*@Source({})*/ float /*@Source({})*/ [1];
 
     public DistanceComparator(final Coordinates center) {
         Objects.requireNonNull(center);
@@ -21,7 +22,7 @@ public class DistanceComparator implements Comparator<Coordinates> {
     }
 
     @Override
-    public int compare(Coordinates lhs, Coordinates rhs) {
+    public @Source({"INTENT"}) int compare(@Source({}) Coordinates lhs, @Source({}) Coordinates rhs) {
         int res = Double.compare(calculateDistance(lhs), calculateDistance(rhs));
         if (res == 0) {
             // equals <==> same coordinates

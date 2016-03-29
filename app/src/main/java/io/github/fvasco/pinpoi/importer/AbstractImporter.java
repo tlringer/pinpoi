@@ -2,15 +2,15 @@ package io.github.fvasco.pinpoi.importer;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
-
 import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * Abstract base importer.
@@ -19,10 +19,10 @@ import io.github.fvasco.pinpoi.util.Util;
  */
 public abstract class AbstractImporter {
 
-    private Consumer<Placemark> consumer;
-    private long collectionId;
+    private @Source({}) Consumer</*@Source({})*/ Placemark> consumer;
+    private @Source({}) long collectionId;
 
-    public long getCollectionId() {
+    public @Source({}) long getCollectionId() {
         return collectionId;
     }
 
@@ -30,7 +30,7 @@ public abstract class AbstractImporter {
         this.collectionId = collectionId;
     }
 
-    public Consumer<Placemark> getConsumer() {
+    public @Source({}) Consumer</*@Source({})*/ Placemark> getConsumer() {
         return consumer;
     }
 
@@ -56,7 +56,7 @@ public abstract class AbstractImporter {
         importImpl(inputStream);
     }
 
-    protected void importPlacemark(@NonNull final Placemark placemark) {
+    protected void importPlacemark(@NonNull final @Source({}) Placemark placemark) {
         final float latitude = placemark.getLatitude();
         final float longitude = placemark.getLongitude();
         if (!Float.isNaN(latitude) && latitude >= -90F && latitude <= 90F
@@ -79,7 +79,7 @@ public abstract class AbstractImporter {
     /**
      * Configure importer from another
      */
-    protected void configureFrom(final AbstractImporter importer) {
+    protected void configureFrom(final @Source({}) AbstractImporter importer) {
         setCollectionId(importer.getCollectionId());
         setConsumer(importer.getConsumer());
     }
@@ -90,5 +90,5 @@ public abstract class AbstractImporter {
      * @param inputStream data source
      * @throws IOException error during reading
      */
-    protected abstract void importImpl(@NonNull InputStream inputStream) throws IOException;
+    protected abstract void importImpl(@NonNull @Source({}) InputStream inputStream) throws IOException;
 }

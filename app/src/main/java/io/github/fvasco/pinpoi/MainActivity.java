@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi;
 
+import sparta.checkers.quals.Source;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -44,51 +45,51 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends /*@Source({})*/ AppCompatActivity
         implements SeekBar.OnSeekBarChangeListener, ACGActivity {
 
-    private static final int LOCATION_RANGE_ACCURACY = 100;
-    private static final int LOCATION_TIME_ACCURACY = 2 * 60_000;
-    private static final String PREFEFERNCE_LATITUDE = "latitude";
-    private static final String PREFEFERNCE_LONGITUDE = "longitude";
-    private static final String PREFEFERNCE_NAME_FILTER = "nameFilter";
-    private static final String PREFEFERNCE_RANGE = "range";
-    private static final String PREFEFERNCE_FAVOURITE = "favourite";
-    private static final String PREFEFERNCE_CATEGORY = "category";
-    private static final String PREFEFERNCE_COLLECTION = "collection";
-    private static final String PREFEFERNCE_GPS = "gps";
-    private static final String PREFEFERNCE_ADDRESS = "address";
-    private static final String PREFEFERNCE_SHOW_MAP = "displayMap";
-    private static final int PERMISSION_CREATE_BACKUP = 10;
-    private static final int PERMISSION_RESTORE_BACKUP = 11;
+    private static final @Source({}) int LOCATION_RANGE_ACCURACY = 100;
+    private static final @Source({}) int LOCATION_TIME_ACCURACY = 2 * 60_000;
+    private static final @Source({}) String PREFEFERNCE_LATITUDE = "latitude";
+    private static final @Source({}) String PREFEFERNCE_LONGITUDE = "longitude";
+    private static final @Source({}) String PREFEFERNCE_NAME_FILTER = "nameFilter";
+    private static final @Source({}) String PREFEFERNCE_RANGE = "range";
+    private static final @Source({}) String PREFEFERNCE_FAVOURITE = "favourite";
+    private static final @Source({}) String PREFEFERNCE_CATEGORY = "category";
+    private static final @Source({}) String PREFEFERNCE_COLLECTION = "collection";
+    private static final @Source({}) String PREFEFERNCE_GPS = "gps";
+    private static final @Source({}) String PREFEFERNCE_ADDRESS = "address";
+    private static final @Source({}) String PREFEFERNCE_SHOW_MAP = "displayMap";
+    private static final @Source({}) int PERMISSION_CREATE_BACKUP = 10;
+    private static final @Source({}) int PERMISSION_RESTORE_BACKUP = 11;
     /**
      * Smallest searchable range
      */
-    private static final int RANGE_MIN = 5;
+    private static final @Source({}) int RANGE_MIN = 5;
     /**
      * Greatest {@linkplain #rangeSeek} value,
      * searchable range value is this plus {@linkplain #RANGE_MIN}
      */
-    private static final int RANGE_MAX_SHIFT = 195;
-    private String selectedPlacemarkCategory;
-    private PlacemarkCollection selectedPlacemarkCollection;
-    private Button categoryButton;
-    private Button collectionButton;
-    private SeekBar rangeSeek;
-    private TextView latitudeText;
-    private TextView longitudeText;
-    private TextView nameFilterText;
-    private CheckBox favouriteCheck;
-    private CheckBox showMapCheck;
-    private TextView rangeLabel;
-    private Geocoder geocoder;
-    private Future<?> futureSearchAddress;
-    private boolean locationEnabled = false;
+    private static final @Source({}) int RANGE_MAX_SHIFT = 195;
+    private @Source({"DATABASE","SHARED_PREFERENCES"}) String selectedPlacemarkCategory;
+    private @Source({}) PlacemarkCollection selectedPlacemarkCollection;
+    private @Source({}) Button categoryButton;
+    private @Source({}) Button collectionButton;
+    private @Source({}) SeekBar rangeSeek;
+    private @Source({}) TextView latitudeText;
+    private @Source({}) TextView longitudeText;
+    private @Source({}) TextView nameFilterText;
+    private @Source({}) CheckBox favouriteCheck;
+    private @Source({}) CheckBox showMapCheck;
+    private @Source({}) TextView rangeLabel;
+    private @Source({}) Geocoder geocoder;
+    private Future</*@Source({})*/ ?> futureSearchAddress;
+    private @Source({}) boolean locationEnabled = false;
 
     /**
      * The Location ACG
      */
-    private UpdateLocationACG locationACG;
+    private @Source({}) UpdateLocationACG locationACG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public @Source({}) boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         // on debug show debug menu
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public @Source({}) boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify restoreBackup parent activity in AndroidManifest.xml.
@@ -220,7 +221,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void setPlacemarkCategory(String placemarkCategory) {
+    private void setPlacemarkCategory(@Source({"DATABASE","SHARED_PREFERENCES"}) String placemarkCategory) {
         if (Util.isEmpty(placemarkCategory)) {
             placemarkCategory = null;
         }
@@ -232,20 +233,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setPlacemarkCollection(final long placemarkCollectionId) {
+    private void setPlacemarkCollection(final @Source({"SHARED_PREFERENCES"}) long placemarkCollectionId) {
         try (final PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance().open()) {
             setPlacemarkCollection(placemarkCollectionDao.findPlacemarkCollectionById(placemarkCollectionId));
         }
     }
 
-    private void setPlacemarkCollection(PlacemarkCollection placemarkCollection) {
+    private void setPlacemarkCollection(@Source({}) PlacemarkCollection placemarkCollection) {
         selectedPlacemarkCollection = placemarkCollection;
         collectionButton.setText(placemarkCollection == null ? null : placemarkCollection.getName());
     }
 
-    public void openPlacemarkCategoryChooser(View view) {
+    public void openPlacemarkCategoryChooser(@Source({}) View view) {
         try (final PlacemarkCollectionDao collectionDao = PlacemarkCollectionDao.getInstance().open()) {
-            final List<String> categories = collectionDao.findAllPlacemarkCollectionCategory();
+            final List</*@Source({})*/ String> categories = collectionDao.findAllPlacemarkCollectionCategory();
             categories.add(0, getString(R.string.any_filter));
             new AlertDialog.Builder(view.getContext())
                     .setTitle(getString(R.string.collection))
@@ -260,14 +261,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void openPlacemarkCollectionChooser(View view) {
+    public void openPlacemarkCollectionChooser(@Source({}) View view) {
         try (final PlacemarkCollectionDao collectionDao = PlacemarkCollectionDao.getInstance().open()) {
-            final List<PlacemarkCollection> placemarkCollections = selectedPlacemarkCategory == null
+            final List</*@Source({})*/ PlacemarkCollection> placemarkCollections = selectedPlacemarkCategory == null
                     ? collectionDao.findAllPlacemarkCollection()
                     : collectionDao.findAllPlacemarkCollectionInCategory(selectedPlacemarkCategory);
-            final List<String> placemarkCollectionNames = new ArrayList<>(placemarkCollections.size());
+            final List</*@Source({"USER_INPUT"})*/ String> placemarkCollectionNames = new ArrayList<>(placemarkCollections.size());
             // skip empty collections
-            for (final Iterator<PlacemarkCollection> iterator = placemarkCollections.iterator(); iterator.hasNext(); ) {
+            for (final Iterator</*@Source({})*/ PlacemarkCollection> iterator = placemarkCollections.iterator(); iterator.hasNext(); ) {
                 final PlacemarkCollection placemarkCollection = iterator.next();
                 if (placemarkCollection.getPoiCount() == 0) {
                     iterator.remove();
@@ -300,16 +301,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onSearchAddress(final View view) {
+    public void onSearchAddress(final @Source({}) View view) {
         if (futureSearchAddress != null) {
             futureSearchAddress.cancel(true);
         }
         if (locationEnabled) {
             // if gps on toast address
             futureSearchAddress = LocationUtil.getAddressStringAsync(new Coordinates(Float.parseFloat(latitudeText.getText().toString()),
-                    Float.parseFloat(longitudeText.getText().toString())), new Consumer<String>() {
+                    Float.parseFloat(longitudeText.getText().toString())), new Consumer</*@Source({})*/ String>() {
                 @Override
-                public void accept(String address) {
+                public void accept(@Source({}) String address) {
                     if (address != null) {
                         Util.showToast(address, Toast.LENGTH_LONG);
                     }
@@ -348,10 +349,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void searchAddress(final String searchAddress, Context context) {
+    private void searchAddress(final @Source({"USER_INPUT"}) String searchAddress, @Source({}) Context context) {
         try {
-            final List<Address> addresses = geocoder.getFromLocationName(searchAddress, 15);
-            for (final Iterator<Address> iterator = addresses.iterator(); iterator.hasNext(); ) {
+            final List</*@Source({})*/ Address> addresses = geocoder.getFromLocationName(searchAddress, 15);
+            for (final Iterator</*@Source({})*/ Address> iterator = addresses.iterator(); iterator.hasNext(); ) {
                 final Address a = iterator.next();
                 if (!a.hasLatitude() || !a.hasLongitude()) {
                     iterator.remove();
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity
             if (Util.isEmpty(addresses)) {
                 Util.showToast(getString(R.string.error_no_address_found), Toast.LENGTH_LONG);
             } else {
-                final String[] options = new String[addresses.size()];
+                final @Source({}) String[] options = new String[addresses.size()];
                 for (int i = options.length - 1; i >= 0; --i) {
                     final Address a = addresses.get(i);
                     options[i] = LocationUtil.toString(a);
@@ -381,12 +382,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onSearchPoi(View view) {
+    public void onSearchPoi(@Source({}) View view) {
         try {
+            @Source({})
             long[] collectionsIds;
             if (selectedPlacemarkCollection == null) {
                 try (final PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance().open()) {
-                    final List<PlacemarkCollection> collections = selectedPlacemarkCategory == null
+                    final List</*@Source({})*/ PlacemarkCollection> collections = selectedPlacemarkCategory == null
                             ? placemarkCollectionDao.findAllPlacemarkCollection()
                             : placemarkCollectionDao.findAllPlacemarkCollectionInCategory(selectedPlacemarkCategory);
                     collectionsIds = new long[collections.size()];
@@ -419,7 +421,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onManagePlacemarkCollections(View view) {
+    public void onManagePlacemarkCollections(@Source({}) View view) {
         startActivity(new Intent(this, PlacemarkCollectionListActivity.class));
     }
 
@@ -466,9 +468,9 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             Util.openFileChooser(BackupManager.DEFAULT_BACKUP_FILE,
-                    new Consumer<File>() {
+                    new Consumer</*@Source({})*/ File>() {
                         @Override
-                        public void accept(final File file) {
+                        public void accept(final @Source({}) File file) {
                             new AlertDialog.Builder(MainActivity.this)
                                     .setTitle(getString(R.string.action_restore_backup))
                                     .setMessage(getString(R.string.backup_file, file.getAbsolutePath()))
@@ -489,7 +491,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void restoreBackup(@NonNull final File file) {
+    private void restoreBackup(@NonNull final @Source({}) File file) {
         Util.showProgressDialog(getString(R.string.action_restore_backup),
                 getString(R.string.backup_file, BackupManager.DEFAULT_BACKUP_FILE.getAbsolutePath()),
                 new Runnable() {
@@ -564,7 +566,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    protected void setLocationEnabled(boolean locationEnabled) {
+    protected void setLocationEnabled(@Source({}) boolean locationEnabled) {
         latitudeText.setEnabled(!locationEnabled);
         longitudeText.setEnabled(!locationEnabled);
         this.locationEnabled = locationEnabled;

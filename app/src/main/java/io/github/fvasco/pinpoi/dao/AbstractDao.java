@@ -23,8 +23,8 @@ public abstract class AbstractDao<T extends AbstractDao> implements AutoCloseabl
     private final Context context;
     @Source(DATABASE)
     protected SQLiteDatabase database;
-    private SQLiteOpenHelper sqLiteOpenHelper;
-    private volatile int openCount;
+    private @Source({}) SQLiteOpenHelper sqLiteOpenHelper;
+    private volatile @Source({}) int openCount;
 
     public AbstractDao(@NonNull Context context) {
         Objects.requireNonNull(context);

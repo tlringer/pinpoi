@@ -18,21 +18,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.List;
-
 import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.DismissOnClickListener;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
+
+import java.util.List;
 
 /**
  * An activity representing a list of Placemark Collections. This activity
@@ -42,19 +38,19 @@ import io.github.fvasco.pinpoi.util.Util;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class PlacemarkCollectionListActivity extends AppCompatActivity {
+public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatActivity {
 
-    private static final int PERMISSION_UPDATE = 1;
+    private static final @Source({}) int PERMISSION_UPDATE = 1;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
+    private @Source({}) boolean mTwoPane;
     /* only for two pane view */
-    private PlacemarkCollectionDetailFragment fragment;
+    private @Source({}) PlacemarkCollectionDetailFragment fragment;
     /* only for two pane view */
-    private FloatingActionButton fabUpdate;
-    private PlacemarkCollectionDao placemarkCollectionDao;
+    private @Source({}) FloatingActionButton fabUpdate;
+    private @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +98,7 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public @Source({}) boolean onCreateOptionsMenu(Menu menu) {
         if (mTwoPane) {
             // Inflate the menu; this adds items to the action bar if it is present.
             getMenuInflater().inflate(R.menu.menu_collection, menu);
@@ -112,7 +108,7 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public @Source({}) boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // This ID represents the Home or Up button. In the case of this
@@ -139,11 +135,11 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(placemarkCollectionDao.findAllPlacemarkCollection()));
     }
 
-    public void createPlacemarkCollection(final View view) {
+    public void createPlacemarkCollection(final @Source({}) View view) {
         createPlacemarkCollection(view.getContext(), null);
     }
 
-    private void createPlacemarkCollection(@NonNull final Context context, @Nullable final Uri sourceUri) {
+    private void createPlacemarkCollection(@NonNull final @Source({}) Context context, @Nullable final @Source({"INTENT"}) Uri sourceUri) {
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         if (sourceUri != null) {
@@ -183,7 +179,7 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void updatePlacemarkCollection(final View view) {
+    public void updatePlacemarkCollection(final @Source({}) View view) {
         if (fragment != null) {
             final String permission = fragment.getRequiredPermissionToUpdatePlacemarkCollection();
             if (ContextCompat.checkSelfPermission(this, permission)
@@ -249,24 +245,24 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
     }
 
     public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+            extends RecyclerView./*@Source({})*/ Adapter<SimpleItemRecyclerViewAdapter./*@Source({})*/ ViewHolder> {
 
-        private final List<PlacemarkCollection> mValues;
-        private final StringBuilder stringBuilder = new StringBuilder();
+        private final @Source({}) List</*@Source({})*/ PlacemarkCollection> mValues;
+        private final @Source({}) StringBuilder stringBuilder = new /*@Source({})*/ StringBuilder();
 
-        public SimpleItemRecyclerViewAdapter(List<PlacemarkCollection> items) {
+        public SimpleItemRecyclerViewAdapter(@Source({}) List</*@Source({})*/ PlacemarkCollection> items) {
             mValues = items;
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public @Source({}) ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(android.R.layout.simple_list_item_1, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final @Source({}) ViewHolder holder, int position) {
             final PlacemarkCollection pc = mValues.get(position);
             holder.mItem = pc;
             if (Util.isEmpty(pc.getCategory())) {
@@ -312,15 +308,15 @@ public class PlacemarkCollectionListActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemCount() {
+        public @Source({}) int getItemCount() {
             return mValues.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final TextView view;
-            public PlacemarkCollection mItem;
+        public class ViewHolder extends RecyclerView./*@Source({})*/ ViewHolder {
+            public final @Source({}) TextView view;
+            public @Source({}) PlacemarkCollection mItem;
 
-            public ViewHolder(View view) {
+            public ViewHolder(@Source({}) View view) {
                 super(view);
                 this.view = (TextView) view.findViewById(android.R.id.text1);
             }

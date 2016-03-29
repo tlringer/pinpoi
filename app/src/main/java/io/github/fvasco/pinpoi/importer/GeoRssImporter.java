@@ -1,4 +1,5 @@
 package io.github.fvasco.pinpoi.importer;
+import sparta.checkers.quals.Source;
 
 /**
  * Import simple geo RSS/Atom
@@ -32,6 +33,7 @@ public class GeoRssImporter extends AbstractXmlImporter {
                 placemark.setDescription(text);
                 break;
             case "point": // Atom
+                @Source({})
                 String[] parts = text.split("[ ,]+", 3);
                 if (parts.length >= 2) {
                     placemark.setLatitude(Float.parseFloat(parts[0]));

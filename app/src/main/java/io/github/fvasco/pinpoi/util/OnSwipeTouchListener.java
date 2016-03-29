@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.Source;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -13,10 +14,10 @@ import java.util.Objects;
 public class OnSwipeTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener {
 
     public static final boolean SWIPE_LEFT = false;
-    public static final boolean SWIPE_RIGHT = true;
-    private static final int SWIPE_DISTANCE_THRESHOLD = 100;
-    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-    private final GestureDetector gestureDetector;
+    public static final @Source({}) boolean SWIPE_RIGHT = true;
+    private static final @Source({}) int SWIPE_DISTANCE_THRESHOLD = 100;
+    private static final @Source({}) int SWIPE_VELOCITY_THRESHOLD = 100;
+    private final @Source({}) GestureDetector gestureDetector;
     private final SwipeTouchListener swipeTouchListener;
 
 
@@ -26,17 +27,17 @@ public class OnSwipeTouchListener extends GestureDetector.SimpleOnGestureListene
         gestureDetector = new GestureDetector(context, this);
     }
 
-    public boolean onTouch(View v, MotionEvent event) {
+    public @Source({}) boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
 
     @Override
-    public boolean onDown(MotionEvent e) {
+    public @Source({}) boolean onDown(@Source({"USER_INPUT"}) MotionEvent e) {
         return true;
     }
 
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    public @Source({}) boolean onFling(@Source({"USER_INPUT"}) MotionEvent e1, @Source({"USER_INPUT"}) MotionEvent e2, @Source({"USER_INPUT"}) float velocityX, @Source({"USER_INPUT"}) float velocityY) {
         if (e1 != null && e2 != null) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();

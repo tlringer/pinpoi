@@ -31,9 +31,7 @@ import sparta.checkers.quals.Source;
 
 import java.util.concurrent.Future;
 
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
-import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * A fragment representing a single Placemark detail screen.
@@ -47,25 +45,25 @@ public class PlacemarkDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_PLACEMARK_ID = "placemarkId";
-    private EditText noteText;
+    private @Source({}) EditText noteText;
     private @Source(DATABASE) Placemark placemark;
-    public final View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
+    public final View.OnLongClickListener longClickListener = new View./*@Source({})*/ OnLongClickListener() {
         @Override
-        public boolean onLongClick(View view) {
+        public @Source({}) boolean onLongClick(View view) {
             LocationUtil.openExternalMap(placemark, true, view.getContext());
             return true;
         }
     };
-    private PlacemarkDao placemarkDao;
-    private PlacemarkCollectionDao placemarkCollectionDao;
+    private @Source({}) PlacemarkDao placemarkDao;
+    private @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
     private @Source(DATABASE) PlacemarkAnnotation placemarkAnnotation;
     private @Source(SHARED_PREFERENCES) SharedPreferences preferences;
-    private TextView placemarkDetail;
-    private TextView coordinateText;
-    private TextView collectionDescriptionTitle;
-    private TextView collectionDescriptionText;
-    private TextView addressText;
-    private Future<String> searchAddressFuture;
+    private @Source({}) TextView placemarkDetail;
+    private @Source({}) TextView coordinateText;
+    private @Source({}) TextView collectionDescriptionTitle;
+    private @Source({}) TextView collectionDescriptionText;
+    private @Source({}) TextView addressText;
+    private Future</*@Source({})*/ String> searchAddressFuture;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -97,7 +95,7 @@ public class PlacemarkDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public @Source({}) View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.placemark_detail, container, false);
         collectionDescriptionTitle = (TextView) rootView.findViewById(R.id.placemark_collection_description_title);
@@ -171,9 +169,9 @@ public class PlacemarkDetailFragment extends Fragment {
         addressText.setText(null);
         addressText.setVisibility(View.GONE);
         if (placemark != null) {
-            searchAddressFuture = LocationUtil.getAddressStringAsync(Coordinates.fromPlacemark(placemark), new Consumer<String>() {
+            searchAddressFuture = LocationUtil.getAddressStringAsync(Coordinates.fromPlacemark(placemark), new Consumer</*@Source({})*/ String>() {
                 @Override
-                public void accept(@Sink(DISPLAY) String address) {
+                public void accept(@Sink(DISPLAY) @Source({}) String address) {
                     if (!Util.isEmpty(address)) {
                         addressText.setVisibility(View.VISIBLE);
                         addressText.setText(address);

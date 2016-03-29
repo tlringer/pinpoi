@@ -7,22 +7,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
@@ -31,6 +15,14 @@ import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.ProgressDialogInputStream;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
+
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 /**
  * Importer facade for:
@@ -52,11 +44,11 @@ public class ImporterFacade implements Consumer<Placemark> {
     /**
      * Signpost for end of elaboration
      */
-    private final Placemark STOP_PLACEMARK = new Placemark();
-    private final PlacemarkDao placemarkDao;
-    private final PlacemarkCollectionDao placemarkCollectionDao;
-    private final BlockingQueue<Placemark> placemarkQueue = new ArrayBlockingQueue<>(256);
-    private ProgressDialog progressDialog;
+    private final @Source({}) Placemark STOP_PLACEMARK = new /*@Source({})*/ Placemark();
+    private final @Source({}) PlacemarkDao placemarkDao;
+    private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
+    private final @Source({}) BlockingQueue</*@Source({})*/ Placemark> placemarkQueue = new /*@Source({})*/ ArrayBlockingQueue<>(256);
+    private @Source({}) ProgressDialog progressDialog;
     private String progressDialogMessageFormat;
 
     public ImporterFacade() {
@@ -69,11 +61,11 @@ public class ImporterFacade implements Consumer<Placemark> {
     }
 
     @Nullable
-    static AbstractImporter createImporter(@NonNull final String resource) {
+    static @Source({}) AbstractImporter createImporter(@NonNull final @Source({}) String resource) {
         String path;
         try {
             if (Util.isUri(resource)) {
-                final List<String> segments = Uri.parse(resource).getPathSegments();
+                final List</*@Source({})*/ String> segments = Uri.parse(resource).getPathSegments();
                 path = null;
                 for (int i = segments.size() - 1; i >= 0 && Util.isEmpty(path); --i) {
                     path = segments.get(i);
@@ -126,7 +118,7 @@ public class ImporterFacade implements Consumer<Placemark> {
      *
      * @see #setProgressDialogMessageFormat(String)
      */
-    public void setProgressDialog(ProgressDialog progressDialog) {
+    public void setProgressDialog(@Source({}) ProgressDialog progressDialog) {
         this.progressDialog = progressDialog;
     }
 
@@ -154,9 +146,9 @@ public class ImporterFacade implements Consumer<Placemark> {
             importer.setConsumer(this);
 
             // insert new placemark
-            final Future<Void> importFuture = Util.EXECUTOR.submit(new Callable<Void>() {
+            final Future</*@Source({})*/ Void> importFuture = Util.EXECUTOR.submit(new Callable</*@Source({})*/ Void>() {
                 @Override
-                public Void call() throws Exception {
+                public @Source({}) Void call() throws Exception {
                     InputStream inputStream;
                     final int max;
                     if (resource.startsWith("/")) {
@@ -262,7 +254,7 @@ public class ImporterFacade implements Consumer<Placemark> {
     }
 
     @Override
-    public void accept(Placemark p) {
+    public void accept(@Source({}) Placemark p) {
         try {
             placemarkQueue.put(p);
         } catch (InterruptedException e) {

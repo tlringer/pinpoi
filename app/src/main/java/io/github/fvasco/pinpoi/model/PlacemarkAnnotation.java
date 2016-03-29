@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.model;
 
+import sparta.checkers.quals.Source;
 import sparta.checkers.quals.Sink;
 
 import java.io.Serializable;
@@ -13,11 +14,11 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  * @author Francesco Vasco
  */
 public class PlacemarkAnnotation implements Serializable {
-    private @Sink(DATABASE) long id;
-    private @Sink({DATABASE, DISPLAY}) float latitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) float longitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) String note;
-    private @Sink({DATABASE, DISPLAY}) boolean flagged;
+    private @Sink(DATABASE) @Source({}) long id;
+    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude = Float.NaN;
+    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude = Float.NaN;
+    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String note;
+    private @Sink({DATABASE, DISPLAY}) @Source({}) boolean flagged;
 
     public @Sink({DATABASE, DISPLAY}) boolean isFlagged() {
         return flagged;
@@ -60,7 +61,7 @@ public class PlacemarkAnnotation implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public @Source({"INTENT","USER_INPUT"}) String toString() {
         return note + '(' + latitude + ',' + longitude + ')';
     }
 

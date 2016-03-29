@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.Source;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -33,12 +34,12 @@ import java.util.regex.Pattern;
  * @author Francesco Vasco
  */
 public final class Util {
-    public static final Handler MAIN_LOOPER_HANDLER = new Handler(Looper.getMainLooper());
+    public static final Handler MAIN_LOOPER_HANDLER = new /*@Source({})*/ Handler(Looper.getMainLooper());
     public static final ExecutorService EXECUTOR =
             Executors.unconfigurableExecutorService(Executors.newScheduledThreadPool(3));
     public static final XmlPullParserFactory XML_PULL_PARSER_FACTORY;
-    private static final Pattern HTML_PATTERN = Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
-    private static Context APPLICATION_CONTEXT;
+    private static final @Source({}) Pattern HTML_PATTERN = Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
+    private static @Source({}) Context APPLICATION_CONTEXT;
 
     static {
         HttpURLConnection.setFollowRedirects(true);
@@ -46,8 +47,8 @@ public final class Util {
             XML_PULL_PARSER_FACTORY = XmlPullParserFactory.newInstance();
             XML_PULL_PARSER_FACTORY.setNamespaceAware(true);
             XML_PULL_PARSER_FACTORY.setValidating(false);
-        } catch (XmlPullParserException e) {
-            throw new RuntimeException(e);
+        } catch (@Source({}) XmlPullParserException e) {
+            throw new /*@Source({})*/ RuntimeException(e);
         }
     }
 
@@ -156,13 +157,14 @@ public final class Util {
 
     public static void openFileChooser(final File dir, final Consumer<File> fileConsumer, final Context context) {
         if (dir.isDirectory() && dir.canRead()) {
+            @Source({})
             File[] files = dir.listFiles(new FileFilter() {
                 @Override
-                public boolean accept(File pathname) {
+                public @Source({"FILESYSTEM"}) boolean accept(File pathname) {
                     return pathname.canRead() && !pathname.getName().startsWith(".");
                 }
             });
-            final String[] fileNames = new String[files.length + 1];
+            final @Source({"FILESYSTEM"}) String[] fileNames = new String[files.length + 1];
             // last is up dir
             fileNames[files.length] = "..";
             for (int i = files.length - 1; i >= 0; --i) {
@@ -233,7 +235,7 @@ public final class Util {
     /**
      * Append text (if present) to string builder using a separator (if present)
      */
-    public static void append(CharSequence text, CharSequence separator, @NonNull StringBuilder stringBuilder) {
+    public static void append(@Source({}) CharSequence text, @Source({}) CharSequence separator, @NonNull @Source({}) StringBuilder stringBuilder) {
         if (!isEmpty(text)) {
             if (stringBuilder.length() > 0 && separator != null) {
                 stringBuilder.append(separator);
@@ -255,7 +257,7 @@ public final class Util {
      * Copy stream to another
      */
     public static void copy(final InputStream inputStream, final OutputStream outputStream) throws IOException {
-        final byte[] buffer = new byte[16 * 1024];
+        final @Source({}) byte[] buffer = new byte[16 * 1024];
         int count;
         while ((count = inputStream.read(buffer)) >= 0) {
             outputStream.write(buffer, 0, count);

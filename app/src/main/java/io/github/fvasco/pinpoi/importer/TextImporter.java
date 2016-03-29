@@ -2,6 +2,8 @@ package io.github.fvasco.pinpoi.importer;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import io.github.fvasco.pinpoi.model.Placemark;
+import sparta.checkers.quals.Source;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +16,6 @@ import java.nio.charset.CodingErrorAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.fvasco.pinpoi.model.Placemark;
-
 /**
  * Import ASCII/UTF-8 file in format
  * <ul>
@@ -27,20 +27,20 @@ import io.github.fvasco.pinpoi.model.Placemark;
  */
 public class TextImporter extends AbstractImporter {
 
-    private static final Pattern LINE_PATTERN = Pattern.compile("\\s*(\"?)([+-]?\\d+\\.\\d+)\\1[,;\\s]+(\"?)([+-]?\\d+\\.\\d+)\\3[,;\\s]+\"(.*)\"\\s*");
-    private static final CharsetDecoder UTF_8_DECODER = Charset.forName("UTF-8").newDecoder();
+    private static final @Source({}) Pattern LINE_PATTERN = Pattern.compile("\\s*(\"?)([+-]?\\d+\\.\\d+)\\1[,;\\s]+(\"?)([+-]?\\d+\\.\\d+)\\3[,;\\s]+\"(.*)\"\\s*");
+    private static final @Source({}) CharsetDecoder UTF_8_DECODER = Charset.forName("UTF-8").newDecoder();
 
     static {
         // fails on not mappable characters
         UTF_8_DECODER.onUnmappableCharacter(CodingErrorAction.REPORT);
     }
 
-    private final byte[] buffer = new byte[4 * 1024];
+    private final @Source({}) byte /*@Source({})*/ [] buffer = new /*@Source({})*/ byte /*@Source({})*/ [4 * 1024];
 
     /**
      * Decode text, if UTF-8 fails then use ISO-8859-1
      */
-    public static String toString(byte[] byteBuffer, int start, int len) {
+    public static String toString(@Source({}) byte /*@Source({})*/ [] byteBuffer, @Source({}) int start, @Source({}) int len) {
         try {
             return UTF_8_DECODER.decode(ByteBuffer.wrap(byteBuffer, start, len)).toString();
         } catch (CharacterCodingException e) {
@@ -52,7 +52,7 @@ public class TextImporter extends AbstractImporter {
         }
     }
 
-    private String readLine(final InputStream inputStream) throws IOException {
+    private String readLine(final @Source({}) InputStream inputStream) throws IOException {
         int pos = 0;
         int b;
         while ((b = inputStream.read()) >= 0) {
@@ -73,7 +73,7 @@ public class TextImporter extends AbstractImporter {
 
 
     @Override
-    protected void importImpl(@NonNull final InputStream inputStream) throws IOException {
+    protected void importImpl(@NonNull final @Source({}) InputStream inputStream) throws IOException {
         String line;
         while ((line = readLine(inputStream)) != null) {
             final Matcher matcher = LINE_PATTERN.matcher(line);

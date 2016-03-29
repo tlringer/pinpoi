@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.importer;
 
-import sparta.checkers.quals.Source;
 import android.test.AndroidTestCase;
 
 import java.io.InputStream;
@@ -21,7 +20,7 @@ public abstract class AbstractImporterTestCase extends AndroidTestCase {
      * @param resource resource file name
      * @return list of imported placemark
      */
-    public @Source({}) List<@Source({}) Placemark> importPlacemark(@Source({}) AbstractImporterTestCase this, final @Source({}) AbstractImporter importer, final @Source({}) String resource) throws Exception {
+    public List<Placemark> importPlacemark(final AbstractImporter importer, final String resource) throws Exception {
         try (final InputStream is = getClass().getResourceAsStream(resource)) {
             return importPlacemark(importer, is);
         }
@@ -30,8 +29,8 @@ public abstract class AbstractImporterTestCase extends AndroidTestCase {
     /**
      * Execute import
      */
-    public @Source({}) List<@Source({}) Placemark> importPlacemark(@Source({}) AbstractImporterTestCase this, final @Source({}) AbstractImporter importer, final @Source({}) InputStream is) throws Exception {
-        final ListConsumer<@Source({}) Placemark> list = new ListConsumer<>();
+    public List<Placemark> importPlacemark(final AbstractImporter importer, final InputStream is) throws Exception {
+        final ListConsumer<Placemark> list = new ListConsumer<>();
         importer.setCollectionId(1);
         importer.setConsumer(list);
         importer.importPlacemarks(is);

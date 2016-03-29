@@ -3,6 +3,8 @@ package io.github.fvasco.pinpoi.util;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
+import io.github.fvasco.pinpoi.dao.AbstractDao;
+import sparta.checkers.quals.Source;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +14,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import io.github.fvasco.pinpoi.dao.AbstractDao;
-
 /**
  * Create and restore backup
  *
@@ -21,8 +21,8 @@ import io.github.fvasco.pinpoi.dao.AbstractDao;
  */
 public class BackupManager {
 
-    public static final File DEFAULT_BACKUP_FILE = new File(Environment.getExternalStorageDirectory(), "pinpoi.backup");
-    private final AbstractDao[] daos;
+    public static final @Source({}) File DEFAULT_BACKUP_FILE = new /*@Source({})*/ File(Environment.getExternalStorageDirectory(), "pinpoi.backup");
+    private final @Source({}) AbstractDao /*@Source({})*/ [] daos;
 
     public BackupManager(final AbstractDao... daos) {
         this.daos = daos;

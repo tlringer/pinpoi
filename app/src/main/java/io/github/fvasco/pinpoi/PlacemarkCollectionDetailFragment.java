@@ -39,16 +39,16 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_PLACEMARK_COLLECTION_ID = "placemarkCollectionId";
-    private static final int FILE_SELECT_CODE = 1;
-    private final PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance();
+    private static final @Source({}) int FILE_SELECT_CODE = 1;
+    private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance();
 
     @Source(DATABASE)
     private PlacemarkCollection placemarkCollection;
-    private EditText descriptionText;
-    private TextView sourceText;
-    private AutoCompleteTextView categoryText;
-    private TextView lastUpdateText;
-    private TextView poiCountText;
+    private @Source({}) EditText descriptionText;
+    private @Source({}) TextView sourceText;
+    private @Source({}) AutoCompleteTextView categoryText;
+    private @Source({}) TextView lastUpdateText;
+    private @Source({}) TextView poiCountText;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,7 +80,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public @Source({}) View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.placemarkcollection_detail, container, false);
         descriptionText = ((EditText) rootView.findViewById(R.id.description));
@@ -232,9 +232,9 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
 
     public void showFileChooser(View view) {
         Util.openFileChooser(Environment.getExternalStorageDirectory(),
-                new Consumer<File>() {
+                new Consumer</*@Source({})*/ File>() {
                     @Override
-                    public void accept(File file) {
+                    public void accept(@Source({}) File file) {
                         sourceText.setText(file.getAbsolutePath());
                     }
                 }, view.getContext());

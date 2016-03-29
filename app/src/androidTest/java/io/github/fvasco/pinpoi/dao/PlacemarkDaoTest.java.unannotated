@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.dao;
 
-import sparta.checkers.quals.Source;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
@@ -20,23 +19,23 @@ import io.github.fvasco.pinpoi.util.Coordinates;
 /**
  * @author Francesco Vasco
  */
-public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
-    public static final @Source({}) Coordinates POMPEI_LOCATION;
-    public static final @Source({}) Coordinates ERCOLANO_LOCATION;
-    public static final @Source({}) Coordinates VESUVIO_LOCATION;
+public class PlacemarkDaoTest extends AndroidTestCase {
+    public static final Coordinates POMPEI_LOCATION;
+    public static final Coordinates ERCOLANO_LOCATION;
+    public static final Coordinates VESUVIO_LOCATION;
 
     static {
         // Pompei
-        POMPEI_LOCATION = new @Source({}) Coordinates(40.7491819F, 14.5007385F);
+        POMPEI_LOCATION = new Coordinates(40.7491819F, 14.5007385F);
         // Ercolano
-        ERCOLANO_LOCATION = new @Source({}) Coordinates(40.8060768F, 14.3529209F);
+        ERCOLANO_LOCATION = new Coordinates(40.8060768F, 14.3529209F);
         // Vesuvio
-        VESUVIO_LOCATION = new @Source({}) Coordinates(40.816667F, 14.433333F);
+        VESUVIO_LOCATION = new Coordinates(40.816667F, 14.433333F);
     }
 
-    private @Source({}) PlacemarkDao dao;
+    private PlacemarkDao dao;
 
-    private static void assertEquals(@Source({"INTENT"}) double expected, @Source({"INTENT"}) double actual) {
+    private static void assertEquals(double expected, double actual) {
         assertEquals(expected, actual, 0.00001);
     }
 
@@ -53,7 +52,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
         super.tearDown();
     }
 
-    private void insertPompeiErcolanoVesuvio(@Source({}) PlacemarkDaoTest this) {
+    private void insertPompeiErcolanoVesuvio() {
         Placemark p = new Placemark();
         p.setName("Pompei");
         p.setDescription("Pompei city");
@@ -78,10 +77,10 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
     }
 
     @Test
-    public void testFindAllPlacemarkNear(@Source({}) PlacemarkDaoTest this) throws Exception {
+    public void testFindAllPlacemarkNear() throws Exception {
         insertPompeiErcolanoVesuvio();
 
-        SortedSet<@Source({}) PlacemarkSearchResult> set = dao.findAllPlacemarkNear(POMPEI_LOCATION, 1, Collections.singleton(1L));
+        SortedSet<PlacemarkSearchResult> set = dao.findAllPlacemarkNear(POMPEI_LOCATION, 1, Collections.singleton(1L));
         assertEquals(1, set.size());
         final PlacemarkSearchResult pompei = set.iterator().next();
         assertEquals("Pompei", pompei.getName());
@@ -102,7 +101,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
         // all data, Pompei first
         set = dao.findAllPlacemarkNear(POMPEI_LOCATION, 14000, Collections.singleton(1L));
         assertEquals(2, set.size());
-        Iterator<@Source({}) PlacemarkSearchResult> iterator = set.iterator();
+        Iterator<PlacemarkSearchResult> iterator = set.iterator();
         assertEquals("Pompei", iterator.next().getName());
         assertEquals("Ercolano", iterator.next().getName());
 
@@ -128,7 +127,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
      * Test aroung longitude 180
      */
     @Test
-    public void testFindAllPlacemarkNearLongitude180(@Source({}) PlacemarkDaoTest this) throws Exception {
+    public void testFindAllPlacemarkNearLongitude180() throws Exception {
         // insert some other point
         insertPompeiErcolanoVesuvio();
 
@@ -147,7 +146,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
         Coordinates coordinates;
         coordinates = new Coordinates(0, 179.9F);
 
-        SortedSet<@Source({}) PlacemarkSearchResult> set = dao.findAllPlacemarkNear(coordinates, 100000, Collections.singleton(1L));
+        SortedSet<PlacemarkSearchResult> set = dao.findAllPlacemarkNear(coordinates, 100000, Collections.singleton(1L));
         assertEquals(2, set.size());
 
         coordinates = new Coordinates(0, -179.9F);
@@ -169,7 +168,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
                 dao.insert(p);
 
                 final Coordinates referenceLocation = new Coordinates((float) (lat + 4 * Math.cos(lon)), (float) (lon + 3 * Math.cos(lat)));
-                final SortedSet<@Source({}) PlacemarkSearchResult> placemarks = dao.findAllPlacemarkNear(referenceLocation,
+                final SortedSet<PlacemarkSearchResult> placemarks = dao.findAllPlacemarkNear(referenceLocation,
                         referenceLocation.distanceTo(Coordinates.fromPlacemark(p)), Collections.singleton(1L));
                 assertEquals("Error on " + name, 1, placemarks.size());
                 final PlacemarkSearchResult psr = placemarks.first();
@@ -179,10 +178,10 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
     }
 
     @Test
-    public void testInsert(@Source({}) PlacemarkDaoTest this) throws Exception {
+    public void testInsert() throws Exception {
         insertPompeiErcolanoVesuvio();
 
-        final List<@Source({}) Placemark> list = dao.findAllPlacemarkByCollectionId(1);
+        final List<Placemark> list = dao.findAllPlacemarkByCollectionId(1);
         assertEquals(2, list.size());
         Placemark p = list.get(0);
         assertEquals(1, p.getId());
@@ -202,7 +201,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
     }
 
     @Test
-    public void testDeleteByCollectionId(@Source({}) PlacemarkDaoTest this) throws Exception {
+    public void testDeleteByCollectionId() throws Exception {
         insertPompeiErcolanoVesuvio();
 
         dao.deleteByCollectionId(999);
@@ -217,7 +216,7 @@ public class PlacemarkDaoTest extends @Source({}) AndroidTestCase {
     }
 
     @Test
-    public void testPlacemarkAnnotation(@Source({}) PlacemarkDaoTest this) throws Exception {
+    public void testPlacemarkAnnotation() throws Exception {
         insertPompeiErcolanoVesuvio();
         final Placemark p = dao.getPlacemark(1);
 

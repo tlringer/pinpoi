@@ -1,9 +1,12 @@
 package io.github.fvasco.pinpoi.importer;
 
 import android.support.annotation.NonNull;
-
+import io.github.fvasco.pinpoi.BuildConfig;
+import io.github.fvasco.pinpoi.model.Placemark;
+import io.github.fvasco.pinpoi.util.Util;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import sparta.checkers.quals.Source;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,22 +14,18 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
-import io.github.fvasco.pinpoi.BuildConfig;
-import io.github.fvasco.pinpoi.model.Placemark;
-import io.github.fvasco.pinpoi.util.Util;
-
 /**
  * Base XML impoter
  *
  * @author Francesco Vasco
  */
 public abstract class AbstractXmlImporter extends AbstractImporter {
-    protected static final String DOCUMENT_TAG = "<XML>";
+    protected static final @Source({}) String DOCUMENT_TAG = "<XML>";
     protected final XmlPullParser parser;
     protected Placemark placemark;
     protected String text;
     protected String tag;
-    private Deque<String> tagStack = new ArrayDeque<>();
+    private @Source({}) Deque</*@Source({})*/ String> tagStack = new /*@Source({})*/ ArrayDeque<>();
 
     public AbstractXmlImporter() {
         try {
@@ -37,7 +36,7 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
     }
 
     @Override
-    protected void importImpl(@NonNull final InputStream is) throws IOException {
+    protected void importImpl(@NonNull final @Source({}) InputStream is) throws IOException {
         try {
             parser.setInput(is, null);
             int eventType = parser.getEventType();
@@ -86,9 +85,9 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
     /**
      * Check if current path match given tags, except current tag in {@linkplain #tag}
      */
-    protected boolean checkCurrentPath(final String... tags) {
+    protected @Source({}) boolean checkCurrentPath(final @Source({}) String... tags) {
         if (tags.length != tagStack.size() - 1) return false;
-        final Iterator<String> iterator = tagStack.descendingIterator();
+        final Iterator</*@Source({})*/ String> iterator = tagStack.descendingIterator();
         for (int i = tags.length - 1; i >= 0; --i) {
             if (!tags[i].equals(iterator.next())) return false;
         }

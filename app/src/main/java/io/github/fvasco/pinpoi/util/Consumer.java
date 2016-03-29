@@ -1,5 +1,4 @@
 package io.github.fvasco.pinpoi.util;
-
 /**
  * A generic consumer interface.
  *

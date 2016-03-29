@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.model;
 
+import sparta.checkers.quals.Source;
 import sparta.checkers.quals.Sink;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
@@ -13,12 +14,12 @@ import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
  */
 public class Placemark implements PlacemarkBase {
 
-    private @Sink(SHARED_PREFERENCES) long id;
+    private @Sink(SHARED_PREFERENCES) @Source({}) long id;
     private @Sink(DISPLAY) String name;
     private @Sink({DATABASE, DISPLAY}) String description;
-    private @Sink({DATABASE, DISPLAY}) float latitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) float longitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) long collectionId;
+    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude = Float.NaN;
+    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude = Float.NaN;
+    private @Sink({DATABASE, DISPLAY}) @Source({}) long collectionId;
 
     public @Sink({DATABASE, DISPLAY}) long getCollectionId() {
         return collectionId;

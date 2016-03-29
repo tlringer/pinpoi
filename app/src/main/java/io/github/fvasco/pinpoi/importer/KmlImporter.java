@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi.importer;
 
+import sparta.checkers.quals.Source;
 import android.util.Log;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.net.URL;
 public class KmlImporter extends AbstractXmlImporter {
 
     private double latitude, longitude;
-    private int coordinateCount;
+    private @Source({}) int coordinateCount;
 
     @Override
     protected void handleStartTag() {
@@ -61,7 +62,7 @@ public class KmlImporter extends AbstractXmlImporter {
                     // read multiple lines if present (point, line, polygon)
                     for (final String line : text.trim().split("\\s+")) {
                         // format: longitude, latitute, altitude
-                        final String[] coordinates = line.split(",", 3);
+                        final @Source({}) String[] coordinates = line.split(",", 3);
                         latitude += Double.parseDouble(coordinates[0]);
                         longitude += Double.parseDouble(coordinates[1]);
                         ++coordinateCount;

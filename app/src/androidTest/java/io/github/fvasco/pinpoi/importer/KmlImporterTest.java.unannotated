@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.importer;
 
-import sparta.checkers.quals.Source;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -11,11 +10,11 @@ import io.github.fvasco.pinpoi.model.Placemark;
 /**
  * @author Francesco Vasco
  */
-public class KmlImporterTest extends @Source({}) AbstractImporterTestCase {
+public class KmlImporterTest extends AbstractImporterTestCase {
 
     @Test
-    public void testImport2(@Source({}) KmlImporterTest this) throws Exception {
-        final List<@Source({}) Placemark> list = importPlacemark(new KmlImporter(), "test2.kml");
+    public void testImport2() throws Exception {
+        final List<Placemark> list = importPlacemark(new KmlImporter(), "test2.kml");
         assertEquals(2, list.size());
         Placemark p = list.get(0);
         assertEquals("New York City", p.getName());
@@ -30,7 +29,7 @@ public class KmlImporterTest extends @Source({}) AbstractImporterTestCase {
     }
 
     @Test
-    public void testImportNetworkLink(@Source({}) KmlImporterTest this) throws Exception {
+    public void testImportNetworkLink() throws Exception {
         final String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n" +
                 "    <Document>\n" +
@@ -42,7 +41,7 @@ public class KmlImporterTest extends @Source({}) AbstractImporterTestCase {
                 "        </NetworkLink>\n" +
                 "    </Document>\n" +
                 "</kml>";
-        final List<@Source({}) Placemark> list = importPlacemark(new KmlImporter(), new ByteArrayInputStream(xml.getBytes("utf-8")));
+        final List<Placemark> list = importPlacemark(new KmlImporter(), new ByteArrayInputStream(xml.getBytes("utf-8")));
         assertEquals(2, list.size());
     }
 }

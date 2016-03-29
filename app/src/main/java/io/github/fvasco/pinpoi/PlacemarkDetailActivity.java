@@ -23,20 +23,20 @@ import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
  * item details are presented side-by-side with a list of items
  * in a {@link PlacemarkListActivity}.
  */
-public class PlacemarkDetailActivity extends AppCompatActivity implements OnSwipeTouchListener.SwipeTouchListener {
+public class PlacemarkDetailActivity extends /*@Source({})*/ AppCompatActivity implements OnSwipeTouchListener.SwipeTouchListener {
 
-    public static final String ARG_PLACEMARK_LIST_ID = "placemarkListId";
-    private long placemarkId;
-    private FloatingActionButton starFab;
-    private FloatingActionButton mapFab;
+    public static final @Source({}) String ARG_PLACEMARK_LIST_ID = "placemarkListId";
+    private @Source({"BUNDLE","INTENT"}) long placemarkId;
+    private @Source({}) FloatingActionButton starFab;
+    private @Source({}) FloatingActionButton mapFab;
     private PlacemarkDetailFragment fragment;
-    private PlacemarkDao placemarkDao;
+    private @Source({}) PlacemarkDao placemarkDao;
     @Source(SHARED_PREFERENCES)
     private SharedPreferences preferences;
     /**
      * Placemark id for swipe
      */
-    private long[] placemarkIdArray;
+    private @Source({"INTENT"}) long /*@Source({"INTENT"})*/ [] placemarkIdArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,16 +124,16 @@ public class PlacemarkDetailActivity extends AppCompatActivity implements OnSwip
         fragment.resetStarFabIcon(starFab);
     }
 
-    public void onStarClick(final View view) {
+    public void onStarClick(final @Source({}) View view) {
         fragment.onStarClick(starFab);
     }
 
-    public void onMapClick(final View view) {
+    public void onMapClick(final @Source({}) View view) {
         fragment.onMapClick(view);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public @Source({}) boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
@@ -149,7 +149,7 @@ public class PlacemarkDetailActivity extends AppCompatActivity implements OnSwip
     }
 
     @Override
-    public void onSwipe(boolean direction) {
+    public void onSwipe(@Source({}) boolean direction) {
         if (placemarkIdArray != null) {
             int i = 0;
             while (placemarkIdArray[i] != placemarkId && i < placemarkIdArray.length) {

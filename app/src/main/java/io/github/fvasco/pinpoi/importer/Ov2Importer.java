@@ -2,13 +2,13 @@ package io.github.fvasco.pinpoi.importer;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import io.github.fvasco.pinpoi.model.Placemark;
+import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import io.github.fvasco.pinpoi.model.Placemark;
-import io.github.fvasco.pinpoi.util.Util;
 
 /**
  * Tomtom OV2 importer
@@ -24,13 +24,14 @@ length-14 bytes: ASCII string specifying the name of the POI
 1 byte: null byte
 */
 public class Ov2Importer extends AbstractImporter {
-    private static int readIntLE(final InputStream is) throws IOException {
+    private static @Source({}) int readIntLE(final @Source({}) InputStream is) throws IOException {
         return is.read() | is.read() << 8 | is.read() << 16 | is.read() << 24;
     }
 
     @Override
-    protected void importImpl(@NonNull final InputStream inputStream) throws IOException {
+    protected void importImpl(@NonNull final @Source({}) InputStream inputStream) throws IOException {
         final DataInputStream dataInputStream = new DataInputStream(inputStream);
+        @Source({})
         byte[] nameBuffer = new byte[64];
         for (int rectype = dataInputStream.read(); rectype >= 0; rectype = dataInputStream.read()) {
             // it is a simple POI record

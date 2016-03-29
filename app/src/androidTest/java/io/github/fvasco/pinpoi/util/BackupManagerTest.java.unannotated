@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
@@ -17,13 +16,13 @@ import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 /**
  * @author Francesco Vasco
  */
-public class BackupManagerTest extends @Source({}) AndroidTestCase {
+public class BackupManagerTest extends AndroidTestCase {
 
-    private @Source({}) Context testContext;
-    private @Source({}) File backupFile;
-    private @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
-    private @Source({}) PlacemarkDao placemarkDao;
-    private @Source({}) BackupManager backupManager;
+    private Context testContext;
+    private File backupFile;
+    private PlacemarkCollectionDao placemarkCollectionDao;
+    private PlacemarkDao placemarkDao;
+    private BackupManager backupManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,7 +60,7 @@ public class BackupManagerTest extends @Source({}) AndroidTestCase {
         final int placemarkCount;
         try (final PlacemarkCollectionDao placemarkCollectionDao = new PlacemarkCollectionDao(testContext).open();
              final PlacemarkDao placemarkDao = new PlacemarkDao(testContext).open()) {
-            List<@Source({}) PlacemarkCollection> allPlacemarkCollection = placemarkCollectionDao.findAllPlacemarkCollection();
+            List<PlacemarkCollection> allPlacemarkCollection = placemarkCollectionDao.findAllPlacemarkCollection();
             placemarkCollectionCount = allPlacemarkCollection.size();
             placemarkCollectionId = allPlacemarkCollection.get(0).getId();
             placemarkCount = placemarkDao.findAllPlacemarkByCollectionId(placemarkCollectionId).size();

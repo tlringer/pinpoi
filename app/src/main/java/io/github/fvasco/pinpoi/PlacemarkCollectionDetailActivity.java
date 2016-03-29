@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi;
 
+import sparta.checkers.quals.Source;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,10 +26,10 @@ import io.github.fvasco.pinpoi.util.Util;
  * item details are presented side-by-side with a list of items
  * in a {@link PlacemarkCollectionListActivity}.
  */
-public class PlacemarkCollectionDetailActivity extends AppCompatActivity {
+public class PlacemarkCollectionDetailActivity extends /*@Source({})*/ AppCompatActivity {
 
-    private static final int PERMISSION_UPDATE = 1;
-    private PlacemarkCollectionDetailFragment fragment;
+    private static final @Source({}) int PERMISSION_UPDATE = 1;
+    private @Source({}) PlacemarkCollectionDetailFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,14 +70,14 @@ public class PlacemarkCollectionDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public @Source({}) boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_collection, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public @Source({}) boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // This ID represents the Home or Up button. In the case of this
@@ -97,7 +98,7 @@ public class PlacemarkCollectionDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void updatePlacemarkCollection(final View view) {
+    public void updatePlacemarkCollection(final @Source({}) View view) {
         if (fragment != null) {
             final String permission = fragment.getRequiredPermissionToUpdatePlacemarkCollection();
             if (ContextCompat.checkSelfPermission(this, permission)
