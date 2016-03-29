@@ -11,20 +11,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.File;
-
+import android.widget.*;
 import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.importer.ImporterFacade;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Extra;
+import sparta.checkers.quals.IntentMap;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
+
+import java.io.File;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 /**
  * A fragment representing a single Placemark Collection detail screen.
@@ -40,6 +41,8 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     public static final String ARG_PLACEMARK_COLLECTION_ID = "placemarkCollectionId";
     private static final int FILE_SELECT_CODE = 1;
     private final PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance();
+
+    @Source(DATABASE)
     private PlacemarkCollection placemarkCollection;
     private EditText descriptionText;
     private TextView sourceText;
@@ -59,10 +62,13 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         placemarkCollectionDao.open();
 
-        if (getArguments().containsKey(ARG_PLACEMARK_COLLECTION_ID)) {
+        @IntentMap({@Extra(key = ARG_PLACEMARK_COLLECTION_ID)})
+        Bundle arguments = getArguments();
+
+        if (arguments.containsKey(ARG_PLACEMARK_COLLECTION_ID)) {
             placemarkCollection = placemarkCollectionDao.findPlacemarkCollectionById(
                     savedInstanceState == null
-                            ? getArguments().getLong(ARG_PLACEMARK_COLLECTION_ID)
+                            ? arguments.getLong(ARG_PLACEMARK_COLLECTION_ID)
                             : savedInstanceState.getLong(ARG_PLACEMARK_COLLECTION_ID));
 
             Activity activity = this.getActivity();
@@ -116,6 +122,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (placemarkCollection != null) {
+            outState = (/*@IntentMap({@Extra(key = ARG_PLACEMARK_COLLECTION_ID, sink = DATABASE)}*/ Bundle) outState;
             outState.putLong(ARG_PLACEMARK_COLLECTION_ID, placemarkCollection.getId());
         }
         super.onSaveInstanceState(outState);
@@ -202,7 +209,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
         });
     }
 
-    public void renamePlacemarkCollection(String newPlacemarkCollectionName) {
+    public void renamePlacemarkCollection(@Sink(DATABASE) String newPlacemarkCollectionName) {
         if (!Util.isEmpty(newPlacemarkCollectionName)
                 && placemarkCollectionDao.findPlacemarkCollectionByName(newPlacemarkCollectionName) == null) {
             placemarkCollection.setName(newPlacemarkCollectionName);
@@ -233,7 +240,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                 }, view.getContext());
     }
 
-    public PlacemarkCollection getPlacemarkCollection() {
+    public @Source(DATABASE) PlacemarkCollection getPlacemarkCollection() {
         return placemarkCollection;
     }
 }

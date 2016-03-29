@@ -1,0 +1,8 @@
+# Flow policy
+ACG("location") -> DATABASE, DISPLAY
+
+# Non-ACG permission model composition
+FILESYSTEM -> DATABASE, DISPLAY
+DATABASE -> DATABASE, DISPLAY
+USER_INPUT -> DATABASE, DISPLAY
+

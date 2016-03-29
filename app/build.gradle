@@ -26,28 +26,55 @@ android {
 
 repositories {
     jcenter()
+    mavenCentral()
 
     flatDir {
         dirs 'libs'
     }
 }
 
+configurations {
+    checkerFrameworkJavac {
+        description = 'a customization of the Open JDK javac compiler with additional support for type annotations'
+    }
+
+    checkerFrameworkAnnotatedJDK {
+       description = 'a copy of JDK classes with Checker Framework type qualifers inserted'
+    }
+    checkerFramework {
+       description = 'The Checker Framework: custom pluggable types for Java'
+    }
+}
 
 // By default, don't run SPARTA. To run SPARTA, run ../gradlew compileDebugJavaWithJavac -PrunSparta=true
 def runSparta = project.properties['runSparta'] ?: false
 
+// To infer annotations, run ../gradlew compileDebugJavaWithJavac -Pinfer=true
+def infer = project.properties['infer'] ?: false
+
 dependencies {
     // Support both options and env vars
-    def checkerFrameworkDir = System.env.CHECKERFRAMEWORK == null ?
-            System.getProperty("CHECKERFRAMEWORK") + "/checker/dist" : "$System.env.CHECKERFRAMEWORK/checker/dist"
-
     def spartaDir = System.env.SPARTA_CODE == null ?
             System.getProperty("SPARTA_CODE") : "$System.env.SPARTA_CODE"
 
-    if (runSparta) {
+    if (runSparta || infer) {
         // checkerframework
-        compile fileTree(dir: checkerFrameworkDir, include: ['*.jar'])
-        compile fileTree(dir: spartaDir, include: ['*.jar']) // move if you need annotations
+        ext.checkerFrameworkVersion = '1.9.12'
+        ext.jdkVersion = 'jdk7'
+        checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
+        checkerFrameworkJavac "org.checkerframework:compiler:${checkerFrameworkVersion}"
+        checkerFramework "org.checkerframework:checker:${checkerFrameworkVersion}"
+        compile "org.checkerframework:checker:${checkerFrameworkVersion}"
+        compile "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
+    }
+
+    compile fileTree(dir: spartaDir, include: ['*.jar'])
+
+    if (infer) {
+        def inferenceDir = System.env.CHECKER_INFERENCE == null ? 
+            System.getProperty("CHECKER_INFERENCE") + "/dist" : "$System.env.CHECKER_INFERENCE/dist"
+
+        compile fileTree(dir: inferenceDir, include: ['*.jar'])
     }
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -70,14 +97,37 @@ if (runSparta) {
             tasks.withType(JavaCompile).all {
                 options.debug = true
                 options.compilerArgs = [
-                        '-processor', 'sparta.checkers.FlowChecker',
+                        '-processor', 'sparta.checkers.intents.IntentChecker',
                         '-AflowPolicy=flow/flow-policy',
+                        '-AcomponentMap=sparta-out/component-map',
                         '-AprintErrorStack'
                 ]
                 options.bootClasspath = System.getProperty("sun.boot.class.path") + ":" + options.bootClasspath
                 options.fork = true
-                options.forkOptions.executable = "$System.env.CHECKERFRAMEWORK/checker/bin/javac"
+                options.forkOptions.jvmArgs += ["-Xbootclasspath/p:${configurations.checkerFrameworkJavac.asPath}"]
             }
         }
     }
 }
+
+if (infer) {
+    allprojects {
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile).all {
+                options.debug = true
+                options.compilerArgs = [
+                        '-processor', 'checkers.inference.InferenceChecker',
+                        '-Xmaxwarns', '1000', 
+                        '-Xmaxerrs', '1000', 
+                        '-XDignore.symbol.file', 
+                        '-AprintErrorStack', 
+                        '-Awarns'   
+                ]
+                options.bootClasspath = System.getProperty("sun.boot.class.path") + ":" + options.bootClasspath
+                options.fork = true
+                options.forkOptions.jvmArgs += ["-Xbootclasspath/p:${configurations.checkerFrameworkJavac.asPath}"]
+            }
+        }
+    }
+}
+

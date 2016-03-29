@@ -1,0 +1,30 @@
+io.github.fvasco.pinpoi.PlacemarkCollectionListActivity$SimpleItemRecyclerViewAdapter$1.onClick(android.view.View) -> io.github.fvasco.pinpoi.PlacemarkCollectionDetailActivity
+io.github.fvasco.pinpoi.PlacemarkCollectionListActivity$1.onClick(android.content.DialogInterface,int) -> io.github.fvasco.pinpoi.PlacemarkCollectionDetailActivity
+io.github.fvasco.pinpoi.MainActivity.onManagePlacemarkCollections(android.view.View) -> io.github.fvasco.pinpoi.PlacemarkCollectionListActivity
+android.support.v7.widget.SearchView.onVoiceClicked() -> com.android.contacts.common.test.FragmentTestActivity
+io.github.fvasco.pinpoi.MainActivity.onSearchPoi(android.view.View) -> io.github.fvasco.pinpoi.PlacemarkListActivity
+android.support.v7.widget.ShareActionProvider$ShareMenuItemOnMenuItemClickListener.onMenuItemClick(android.view.MenuItem) -> com.android.contacts.common.test.FragmentTestActivity, <any_string>
+com.google.android.gms.common.stats.zzb.zza(android.content.Context,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String) -> com.android.contacts.common.test.FragmentTestActivity
+
+#Intents assigned at run time:
+android.support.v7.widget.ActivityChooserView$Callbacks.onClick(android.view.View) -> RECEIVER_NOT_FOUND
+android.support.v7.widget.ActivityChooserView$Callbacks.onItemClick(android.widget.AdapterView,android.view.View,int,long) -> RECEIVER_NOT_FOUND
+android.support.v7.widget.SearchView.launchIntent(android.content.Intent) -> RECEIVER_NOT_FOUND
+android.support.v7.widget.SearchView.launchQuerySearch(int,java.lang.String,java.lang.String) -> RECEIVER_NOT_FOUND
+com.google.android.gms.common.internal.zzh.onClick(android.content.DialogInterface,int) -> RECEIVER_NOT_FOUND
+com.google.android.gms.common.stats.zzb.zza(android.content.Context,java.lang.String,android.content.Intent,android.content.ServiceConnection,int) -> RECEIVER_NOT_FOUND
+
+#Intents using URIs:
+#Examine the URIs of the intents sent in each method
+#on the left side of the lines below and comment
+#the lines below where the communication is impossible to occur
+android.support.v4.app.FragmentActivity.startActivityForResult(android.content.Intent,int) -> RECEIVER_NOT_FOUND
+android.support.v4.app.NavUtils$NavUtilsImplBase.navigateUpTo(android.app.Activity,android.content.Intent) -> RECEIVER_NOT_FOUND
+io.github.fvasco.pinpoi.util.LocationUtil.openExternalMap(io.github.fvasco.pinpoi.model.PlacemarkBase,boolean,android.content.Context) -> RECEIVER_NOT_FOUND
+com.google.android.gms.dynamic.zza$5.onClick(android.view.View) -> RECEIVER_NOT_FOUND
+io.github.fvasco.pinpoi.MainActivity.onOptionsItemSelected(android.view.MenuItem) ->  RECEIVER_NOT_FOUND
+
+#No receiver found for these intents:
+
+com.google.android.gms.dynamic.zza$5.onClick(android.view.View) -> RECEIVER_NOT_FOUND
+io.github.fvasco.pinpoi.util.LocationUtil.openExternalMap(io.github.fvasco.pinpoi.model.PlacemarkBase,boolean,android.content.Context) -> RECEIVER_NOT_FOUND

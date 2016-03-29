@@ -17,9 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.concurrent.Future;
-
 import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.model.Placemark;
@@ -29,6 +26,14 @@ import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Coordinates;
 import io.github.fvasco.pinpoi.util.LocationUtil;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
+
+import java.util.concurrent.Future;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
 
 /**
  * A fragment representing a single Placemark detail screen.
@@ -43,7 +48,7 @@ public class PlacemarkDetailFragment extends Fragment {
      */
     public static final String ARG_PLACEMARK_ID = "placemarkId";
     private EditText noteText;
-    private Placemark placemark;
+    private @Source(DATABASE) Placemark placemark;
     public final View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
@@ -53,8 +58,8 @@ public class PlacemarkDetailFragment extends Fragment {
     };
     private PlacemarkDao placemarkDao;
     private PlacemarkCollectionDao placemarkCollectionDao;
-    private PlacemarkAnnotation placemarkAnnotation;
-    private SharedPreferences preferences;
+    private @Source(DATABASE) PlacemarkAnnotation placemarkAnnotation;
+    private @Source(SHARED_PREFERENCES) SharedPreferences preferences;
     private TextView placemarkDetail;
     private TextView coordinateText;
     private TextView collectionDescriptionTitle;
@@ -121,15 +126,15 @@ public class PlacemarkDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public PlacemarkAnnotation getPlacemarkAnnotation() {
+    public @Source(DATABASE) PlacemarkAnnotation getPlacemarkAnnotation() {
         return placemarkAnnotation;
     }
 
-    public Placemark getPlacemark() {
+    public @Source(DATABASE) Placemark getPlacemark() {
         return placemark;
     }
 
-    public void setPlacemark(final Placemark placemark) {
+    public void setPlacemark(@Source(DATABASE) final Placemark placemark) {
         if (placemarkAnnotation != null) {
             placemarkAnnotation.setNote(noteText.getText().toString());
             placemarkDao.update(placemarkAnnotation);
@@ -168,7 +173,7 @@ public class PlacemarkDetailFragment extends Fragment {
         if (placemark != null) {
             searchAddressFuture = LocationUtil.getAddressStringAsync(Coordinates.fromPlacemark(placemark), new Consumer<String>() {
                 @Override
-                public void accept(String address) {
+                public void accept(@Sink(DISPLAY) String address) {
                     if (!Util.isEmpty(address)) {
                         addressText.setVisibility(View.VISIBLE);
                         addressText.setText(address);

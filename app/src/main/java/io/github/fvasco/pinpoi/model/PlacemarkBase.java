@@ -1,5 +1,10 @@
 package io.github.fvasco.pinpoi.model;
 
+import sparta.checkers.quals.Sink;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+
 /**
  * Placemark base information
  *
@@ -7,9 +12,9 @@ package io.github.fvasco.pinpoi.model;
  */
 public interface PlacemarkBase {
 
-    String getName();
+    @Sink({DATABASE, DISPLAY}) String getName();
 
-    float getLatitude();
+    @Sink({DATABASE, DISPLAY}) float getLatitude();
 
-    float getLongitude();
+    @Sink({DATABASE, DISPLAY}) float getLongitude();
 }

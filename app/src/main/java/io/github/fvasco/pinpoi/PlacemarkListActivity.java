@@ -27,22 +27,17 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.model.PlacemarkSearchResult;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Coordinates;
 import io.github.fvasco.pinpoi.util.LocationUtil;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Extra;
+import sparta.checkers.quals.IntentMap;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * An activity representing a list of Placemarks. This activity
@@ -102,8 +97,11 @@ public class PlacemarkListActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.placemark_list);
         mapWebView = (WebView) findViewById(R.id.mapWebView);
+
+        @IntentMap({@Extra(key=ARG_SHOW_MAP)})
+        Intent intent = getIntent();
         if (savedInstanceState == null
-                ? getIntent().getBooleanExtra(ARG_SHOW_MAP, false)
+                ? intent.getBooleanExtra(ARG_SHOW_MAP, false)
                 : savedInstanceState.getBoolean(ARG_SHOW_MAP)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -195,19 +193,23 @@ public class PlacemarkListActivity extends AppCompatActivity {
     private void searchPoi(final @NonNull Consumer<Collection<PlacemarkSearchResult>> placemarksConsumer) {
         // load parameters
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        final float latitude = getIntent().getFloatExtra(ARG_LATITUDE, preferences.getFloat(ARG_LATITUDE, Float.NaN));
-        final float longitude = getIntent().getFloatExtra(ARG_LONGITUDE, preferences.getFloat(ARG_LONGITUDE, Float.NaN));
+
+        @IntentMap({@Extra(key=ARG_LATITUDE), @Extra(key=ARG_LONGITUDE), @Extra(key=ARG_RANGE), @Extra(key=ARG_NAME_FILTER),
+                    @Extra(key=ARG_FAVOURITE), @Extra(key=ARG_COLLECTION_IDS)})
+        Intent intent = getIntent();
+        final float latitude = intent.getFloatExtra(ARG_LATITUDE, preferences.getFloat(ARG_LATITUDE, Float.NaN));
+        final float longitude = intent.getFloatExtra(ARG_LONGITUDE, preferences.getFloat(ARG_LONGITUDE, Float.NaN));
         searchCoordinate = new Coordinates(latitude, longitude);
-        range = getIntent().getIntExtra(ARG_RANGE, preferences.getInt(ARG_RANGE, 0));
-        String nameFilter = getIntent().getStringExtra(ARG_NAME_FILTER);
+        range = intent.getIntExtra(ARG_RANGE, preferences.getInt(ARG_RANGE, 0));
+        String nameFilter = intent.getStringExtra(ARG_NAME_FILTER);
         if (nameFilter == null) {
             nameFilter = preferences.getString(ARG_NAME_FILTER, null);
         }
-        final boolean favourite = getIntent().getBooleanExtra(ARG_FAVOURITE, preferences.getBoolean(ARG_FAVOURITE, false));
+        final boolean favourite = intent.getBooleanExtra(ARG_FAVOURITE, preferences.getBoolean(ARG_FAVOURITE, false));
         final String nameFilterFinal = nameFilter;
 
         // read collections id or parse from preference
-        long[] collectionIds = getIntent().getLongArrayExtra(ARG_COLLECTION_IDS);
+        long[] collectionIds = intent.getLongArrayExtra(ARG_COLLECTION_IDS);
         if (collectionIds == null) {
             final Set<String> stringIds = preferences.getStringSet(ARG_COLLECTION_IDS, Collections.EMPTY_SET);
             collectionIds = new long[stringIds.size()];

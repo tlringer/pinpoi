@@ -10,10 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.util.OnSwipeTouchListener;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
+
+import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
 
 /**
  * An activity representing a single Placemark detail screen. This
@@ -29,6 +31,7 @@ public class PlacemarkDetailActivity extends AppCompatActivity implements OnSwip
     private FloatingActionButton mapFab;
     private PlacemarkDetailFragment fragment;
     private PlacemarkDao placemarkDao;
+    @Source(SHARED_PREFERENCES)
     private SharedPreferences preferences;
     /**
      * Placemark id for swipe

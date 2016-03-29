@@ -6,15 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.model.PlacemarkAnnotation;
 import io.github.fvasco.pinpoi.model.PlacemarkBase;
@@ -22,6 +13,11 @@ import io.github.fvasco.pinpoi.model.PlacemarkSearchResult;
 import io.github.fvasco.pinpoi.util.Coordinates;
 import io.github.fvasco.pinpoi.util.DistanceComparator;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.*;
+
+import java.util.*;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 /**
  * Dao for {@linkplain io.github.fvasco.pinpoi.model.Placemark}
@@ -64,6 +60,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
      * @param i db coordinate
      * @return float coordinates
      */
+    @PolyFlow
     private static float coordinateToFloat(int i) {
         return i / COORDINATE_MULTIPLIER;
     }
@@ -74,10 +71,12 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
      * @param f float coordinate
      * @return db coordinates
      */
+    @PolyFlow
     private static int coordinateToInt(float f) {
         return Math.round(f * COORDINATE_MULTIPLIER);
     }
 
+    @PolyFlow
     private static int coordinateToInt(double f) {
         return (int) Math.round(f * COORDINATE_MULTIPLIER);
     }
@@ -117,10 +116,10 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         return new PlacemarkDatabase(context);
     }
 
-    public List<Placemark> findAllPlacemarkByCollectionId(final long collectionId) {
+    public List</*@Source(DATABASE)*/ Placemark> findAllPlacemarkByCollectionId(@Sink(DATABASE) final long collectionId) {
         try (final Cursor cursor = database.query("PLACEMARK", null,
                 "collection_id=" + collectionId, null, null, null, "_ID")) {
-            final List<Placemark> res = new ArrayList<>();
+            final List</*@Source(DATABASE)*/ Placemark> res = new ArrayList<>();
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 res.add(cursorToPlacemark(cursor));
@@ -130,7 +129,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         }
     }
 
-    public SortedSet<PlacemarkSearchResult> findAllPlacemarkNear
+    public SortedSet</*@Source(DATABASE)*/ PlacemarkSearchResult> findAllPlacemarkNear
             (final Coordinates coordinates,
              final double range,
              final Collection<Long> collectionIds) {
@@ -144,7 +143,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
      * @param range         radius of search, in meters
      * @param collectionIds collection id filter
      */
-    public SortedSet<PlacemarkSearchResult> findAllPlacemarkNear(
+    public SortedSet</*@Source(DATABASE)*/ PlacemarkSearchResult> findAllPlacemarkNear(
             final Coordinates coordinates,
             final double range,
             String nameFilter,
@@ -190,7 +189,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         }
 
         final DistanceComparator locationComparator = new DistanceComparator(coordinates);
-        final SortedSet<PlacemarkSearchResult> res = new TreeSet<>(locationComparator);
+        final SortedSet</*@Source(DATABASE)*/ PlacemarkSearchResult> res = new TreeSet</*@Source(DATABASE)*/ PlacemarkSearchResult>(locationComparator);
         try (final Cursor cursor = database.rawQuery(sql.toString(), whereArgs.toArray(new String[whereArgs.size()]))) {
             cursor.moveToFirst();
             double maxDistance = range;
@@ -213,7 +212,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         return res;
     }
 
-    public Placemark getPlacemark(final long id) {
+    public @Source(DATABASE) Placemark getPlacemark(@Sink(DATABASE) final long id) {
         try (final Cursor cursor = database.query("PLACEMARK", null,
                 "_ID=" + id, null, null, null, null)) {
             cursor.moveToFirst();
@@ -226,7 +225,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
      *
      * @return annotaion for a placemark
      */
-    public PlacemarkAnnotation loadPlacemarkAnnotation(PlacemarkBase placemark) {
+    public @Source(DATABASE) PlacemarkAnnotation loadPlacemarkAnnotation(PlacemarkBase placemark) {
         try (final Cursor cursor = database.query("PLACEMARK_ANNOTATION", null,
                 "latitude=" + coordinateToInt(placemark.getLatitude()) + " AND longitude=" + coordinateToInt(placemark.getLongitude()), null,
                 null, null, null)) {
@@ -247,7 +246,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         }
     }
 
-    public void update(final PlacemarkAnnotation placemarkAnnotation) {
+    public void update(@Sink(DATABASE) final PlacemarkAnnotation placemarkAnnotation) {
         if (placemarkAnnotation.getNote().isEmpty() && !placemarkAnnotation.isFlagged()) {
             database.delete("PLACEMARK_ANNOTATION", "_ID=" + placemarkAnnotation.getId(), null);
             placemarkAnnotation.setId(0);
@@ -268,7 +267,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         }
     }
 
-    public void insert(Placemark p) {
+    public void insert(@Sink(DATABASE) Placemark p) {
         final long id = database.insert("PLACEMARK", null, placemarkToContentValues(p));
         if (id == -1) {
             throw new IllegalArgumentException("Data not valid");
@@ -276,10 +275,11 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         p.setId(id);
     }
 
-    public void deleteByCollectionId(final long collectionId) {
+    public void deleteByCollectionId(@Sink(DATABASE) final long collectionId) {
         database.delete("PLACEMARK", "collection_id=" + collectionId, null);
     }
 
+    @PolyFlow
     private ContentValues placemarkToContentValues(final Placemark p) {
         final ContentValues cv = new ContentValues();
         cv.put("latitude", coordinateToInt(p.getLatitude()));
@@ -290,6 +290,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         return cv;
     }
 
+    @PolyFlow
     private ContentValues placemarkAnnotationToContentValues(final PlacemarkAnnotation pa) {
         final ContentValues cv = new ContentValues();
         cv.put("latitude", coordinateToInt(pa.getLatitude()));
@@ -299,6 +300,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         return cv;
     }
 
+    @PolyFlow
     private Placemark cursorToPlacemark(Cursor cursor) {
         final Placemark p = new Placemark();
         p.setId(cursor.getLong(0));
@@ -310,6 +312,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
         return p;
     }
 
+    @PolyFlow
     private PlacemarkSearchResult cursorToPlacemarkSearchResult(Cursor cursor) {
         return new PlacemarkSearchResult(cursor.getLong(0),
                 coordinateToFloat(cursor.getInt(1)),
@@ -318,6 +321,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
                 cursor.getInt(4) != 0);
     }
 
+    @PolyFlow
     private PlacemarkAnnotation cursorToPlacemarkAnnotation(Cursor cursor) {
         final PlacemarkAnnotation pa = new PlacemarkAnnotation();
         pa.setId(cursor.getLong(0));

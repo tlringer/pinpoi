@@ -1,5 +1,10 @@
 package io.github.fvasco.pinpoi.model;
 
+import sparta.checkers.quals.Sink;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+
 /**
  * A collection, aggregator for {@linkplain Placemark}
  *
@@ -7,70 +12,70 @@ package io.github.fvasco.pinpoi.model;
  */
 public class PlacemarkCollection {
 
-    private long id;
-    private String name;
-    private String description;
-    private String category;
-    private String source;
-    private long lastUpdate;
-    private int poiCount;
+    private @Sink(DATABASE) long id;
+    private @Sink({DATABASE, DISPLAY}) String name;
+    private @Sink({DATABASE, DISPLAY}) String description;
+    private @Sink({DATABASE, DISPLAY}) String category;
+    private @Sink({DATABASE, DISPLAY}) String source;
+    private @Sink({DATABASE, DISPLAY}) long lastUpdate;
+    private @Sink({DATABASE, DISPLAY}) int poiCount;
 
-    public int getPoiCount() {
+    public @Sink({DATABASE, DISPLAY}) int getPoiCount() {
         return poiCount;
     }
 
-    public void setPoiCount(int poiCount) {
+    public void setPoiCount(@Sink({DATABASE, DISPLAY}) int poiCount) {
         this.poiCount = poiCount;
     }
 
     /**
      * Last collection update, unix time
      */
-    public long getLastUpdate() {
+    public @Sink({DATABASE, DISPLAY}) long getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(long lastUpdate) {
+    public void setLastUpdate(@Sink({DATABASE, DISPLAY}) long lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
-    public String getCategory() {
+    public @Sink({DATABASE, DISPLAY}) String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(@Sink({DATABASE, DISPLAY}) String category) {
         this.category = category;
     }
 
-    public long getId() {
+    public @Sink(DISPLAY) long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(@Sink(DISPLAY) long id) {
         this.id = id;
     }
 
-    public String getName() {
+    public @Sink({DATABASE, DISPLAY}) String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@Sink({DATABASE, DISPLAY}) String name) {
         this.name = name;
     }
 
-    public String getDescription() {
+    public @Sink({DATABASE, DISPLAY}) String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@Sink({DATABASE, DISPLAY}) String description) {
         this.description = description;
     }
 
-    public String getSource() {
+    public @Sink({DATABASE, DISPLAY}) String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public void setSource(@Sink({DATABASE, DISPLAY}) String source) {
         this.source = source;
     }
 

@@ -1,10 +1,14 @@
 package io.github.fvasco.pinpoi.util;
 
 import android.location.Location;
+import io.github.fvasco.pinpoi.model.Placemark;
+import sparta.checkers.quals.PolyFlow;
+import sparta.checkers.quals.Sink;
 
 import java.util.Objects;
 
-import io.github.fvasco.pinpoi.model.Placemark;
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
 
 /**
  * Simple coordinates
@@ -12,14 +16,15 @@ import io.github.fvasco.pinpoi.model.Placemark;
  * @author Francesco Vasco
  */
 public class Coordinates implements Cloneable {
-    public final float latitude;
-    public final float longitude;
+    public final @Sink({DATABASE, DISPLAY}) float latitude;
+    public final @Sink({DATABASE, DISPLAY}) float longitude;
 
-    public Coordinates(final float latitude, final float longitude) {
+    public Coordinates(final @Sink({DATABASE, DISPLAY}) float latitude, final @Sink({DATABASE, DISPLAY}) float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
+    @PolyFlow
     public static Coordinates fromPlacemark(Placemark placemark) {
         return new Coordinates(placemark.getLatitude(), placemark.getLongitude());
     }
@@ -47,19 +52,19 @@ public class Coordinates implements Cloneable {
         return Objects.hash(latitude, longitude);
     }
 
-    public float getLatitude() {
+    public @Sink({DATABASE, DISPLAY}) float getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public @Sink({DATABASE, DISPLAY}) float getLongitude() {
         return longitude;
     }
 
-    public Coordinates withLatitude(final float newLatitude) {
+    public Coordinates withLatitude(final @Sink({DATABASE, DISPLAY}) float newLatitude) {
         return new Coordinates(newLatitude, longitude);
     }
 
-    public Coordinates withLongitude(final float newLongitude) {
+    public Coordinates withLongitude(final @Sink({DATABASE, DISPLAY}) float newLongitude) {
         return new Coordinates(latitude, newLongitude);
     }
 

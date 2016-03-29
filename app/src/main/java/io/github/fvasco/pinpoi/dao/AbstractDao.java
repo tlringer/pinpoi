@@ -5,10 +5,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import io.github.fvasco.pinpoi.BuildConfig;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.util.Objects;
 
-import io.github.fvasco.pinpoi.BuildConfig;
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 /**
  * Generic Dao.
@@ -16,12 +19,14 @@ import io.github.fvasco.pinpoi.BuildConfig;
  * @author Francesco Vasco
  */
 public abstract class AbstractDao<T extends AbstractDao> implements AutoCloseable {
+    @Sink({})
     private final Context context;
+    @Source(DATABASE)
     protected SQLiteDatabase database;
     private SQLiteOpenHelper sqLiteOpenHelper;
     private volatile int openCount;
 
-    public AbstractDao(@NonNull final Context context) {
+    public AbstractDao(@NonNull Context context) {
         Objects.requireNonNull(context);
         this.context = context;
         reset();
@@ -93,7 +98,7 @@ public abstract class AbstractDao<T extends AbstractDao> implements AutoCloseabl
         openCount = 0;
     }
 
-    public SQLiteDatabase getDatabase() {
+    public @Source(DATABASE) SQLiteDatabase getDatabase() {
         return database;
     }
 
