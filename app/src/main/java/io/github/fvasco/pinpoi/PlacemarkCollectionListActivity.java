@@ -26,9 +26,14 @@ import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.DismissOnClickListener;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.util.List;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * An activity representing a list of Placemark Collections. This activity
@@ -132,7 +137,8 @@ public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatAc
 
     private void setupRecyclerView() {
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.placemarkcollection_list);
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(placemarkCollectionDao.findAllPlacemarkCollection()));
+        List</*@Source("DATABASE")*/ PlacemarkCollection> placemarkCollections = placemarkCollectionDao.findAllPlacemarkCollection();
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(placemarkCollections));
     }
 
     public void createPlacemarkCollection(final @Source({}) View view) {
@@ -194,7 +200,7 @@ public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatAc
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String permissions[], @Source(USER_INPUT) @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_UPDATE && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             updatePlacemarkCollection(null);
@@ -247,10 +253,10 @@ public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatAc
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView./*@Source({})*/ Adapter<SimpleItemRecyclerViewAdapter./*@Source({})*/ ViewHolder> {
 
-        private final @Source({}) List</*@Source({})*/ PlacemarkCollection> mValues;
-        private final @Source({}) StringBuilder stringBuilder = new /*@Source({})*/ StringBuilder();
+        private final @Source(DATABASE) List</*@Source(DATABASE)*/ PlacemarkCollection> mValues;
+        private final @Sink(DISPLAY) StringBuilder stringBuilder = (/*@Sink(DISPLAY)*/ StringBuilder) new StringBuilder();
 
-        public SimpleItemRecyclerViewAdapter(@Source({}) List</*@Source({})*/ PlacemarkCollection> items) {
+        public SimpleItemRecyclerViewAdapter(@Source(DATABASE) List</*@Source(DATABASE)*/ PlacemarkCollection> items) {
             mValues = items;
         }
 
@@ -314,7 +320,7 @@ public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatAc
 
         public class ViewHolder extends RecyclerView./*@Source({})*/ ViewHolder {
             public final @Source({}) TextView view;
-            public @Source({}) PlacemarkCollection mItem;
+            public @Source(DATABASE) PlacemarkCollection mItem;
 
             public ViewHolder(@Source({}) View view) {
                 super(view);

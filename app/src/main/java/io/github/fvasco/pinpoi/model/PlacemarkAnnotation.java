@@ -1,12 +1,11 @@
 package io.github.fvasco.pinpoi.model;
 
 import sparta.checkers.quals.Source;
-import sparta.checkers.quals.Sink;
 
 import java.io.Serializable;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * A user annotation on {@linkplain Placemark}
@@ -14,54 +13,54 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  * @author Francesco Vasco
  */
 public class PlacemarkAnnotation implements Serializable {
-    private @Sink(DATABASE) @Source({}) long id;
-    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String note;
-    private @Sink({DATABASE, DISPLAY}) @Source({}) boolean flagged;
+    private @Source(DATABASE) long id;
+    private @Source({DATABASE, USER_INPUT}) float latitude = Float.NaN;
+    private @Source({DATABASE, USER_INPUT}) float longitude = Float.NaN;
+    private @Source({DATABASE, USER_INPUT}) String note;
+    private @Source(DATABASE) boolean flagged;
 
-    public @Sink({DATABASE, DISPLAY}) boolean isFlagged() {
+    public @Source(DATABASE) boolean isFlagged() {
         return flagged;
     }
 
-    public void setFlagged(@Sink({DATABASE, DISPLAY}) boolean flagged) {
+    public void setFlagged(@Source(DATABASE) boolean flagged) {
         this.flagged = flagged;
     }
 
-    public @Sink(DATABASE) long getId() {
+    public @Source(DATABASE) long getId() {
         return id;
     }
 
-    public void setId(@Sink(DATABASE) long id) {
+    public void setId(@Source(DATABASE) long id) {
         this.id = id;
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLatitude() {
+    public @Source({DATABASE, USER_INPUT}) float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(@Sink({DATABASE, DISPLAY}) float latitude) {
+    public void setLatitude(@Source({DATABASE, USER_INPUT}) float latitude) {
         this.latitude = latitude;
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLongitude() {
+    public @Source({DATABASE, USER_INPUT}) float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(@Sink({DATABASE, DISPLAY}) float longitude) {
+    public void setLongitude(@Source({DATABASE, USER_INPUT}) float longitude) {
         this.longitude = longitude;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getNote() {
+    public @Source({DATABASE, USER_INPUT}) String getNote() {
         return note;
     }
 
-    public void setNote(@Sink({DATABASE, DISPLAY}) String note) {
+    public void setNote(@Source({DATABASE, USER_INPUT}) String note) {
         this.note = note;
     }
 
     @Override
-    public @Source({"INTENT","USER_INPUT"}) String toString() {
+    public @Source({DATABASE, USER_INPUT}) String toString() {
         return note + '(' + latitude + ',' + longitude + ')';
     }
 

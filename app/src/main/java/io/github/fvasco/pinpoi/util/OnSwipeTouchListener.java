@@ -1,12 +1,15 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import sparta.checkers.quals.Source;
 
 import java.util.Objects;
+
+import static sparta.checkers.quals.FlowPermissionString.ANY;
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * Detects left and right swipes across a view.
@@ -18,7 +21,7 @@ public class OnSwipeTouchListener extends GestureDetector.SimpleOnGestureListene
     private static final @Source({}) int SWIPE_DISTANCE_THRESHOLD = 100;
     private static final @Source({}) int SWIPE_VELOCITY_THRESHOLD = 100;
     private final @Source({}) GestureDetector gestureDetector;
-    private final SwipeTouchListener swipeTouchListener;
+    private final @Source(ANY) SwipeTouchListener swipeTouchListener;
 
 
     public OnSwipeTouchListener(SwipeTouchListener swipeTouchListener, Context context) {
@@ -37,7 +40,7 @@ public class OnSwipeTouchListener extends GestureDetector.SimpleOnGestureListene
     }
 
     @Override
-    public @Source({}) boolean onFling(@Source({"USER_INPUT"}) MotionEvent e1, @Source({"USER_INPUT"}) MotionEvent e2, @Source({"USER_INPUT"}) float velocityX, @Source({"USER_INPUT"}) float velocityY) {
+    public @Source({}) boolean onFling(@Source(USER_INPUT) MotionEvent e1, @Source(USER_INPUT) MotionEvent e2, float velocityX, float velocityY) {
         if (e1 != null && e2 != null) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();
@@ -50,6 +53,6 @@ public class OnSwipeTouchListener extends GestureDetector.SimpleOnGestureListene
     }
 
     public interface SwipeTouchListener {
-        void onSwipe(boolean direction);
+        void onSwipe(@Source({}) boolean direction);
     }
 }

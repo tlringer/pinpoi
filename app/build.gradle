@@ -22,6 +22,9 @@ android {
     }
     productFlavors {
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -49,15 +52,12 @@ configurations {
 // By default, don't run SPARTA. To run SPARTA, run ../gradlew compileDebugJavaWithJavac -PrunSparta=true
 def runSparta = project.properties['runSparta'] ?: false
 
-// To infer annotations, run ../gradlew compileDebugJavaWithJavac -Pinfer=true
-def infer = project.properties['infer'] ?: false
-
 dependencies {
     // Support both options and env vars
     def spartaDir = System.env.SPARTA_CODE == null ?
             System.getProperty("SPARTA_CODE") : "$System.env.SPARTA_CODE"
 
-    if (runSparta || infer) {
+    if (runSparta) {
         // checkerframework
         ext.checkerFrameworkVersion = '1.9.12'
         ext.jdkVersion = 'jdk7'
@@ -69,14 +69,6 @@ dependencies {
     }
 
     compile fileTree(dir: spartaDir, include: ['*.jar'])
-
-    if (infer) {
-        def inferenceDir = System.env.CHECKER_INFERENCE == null ? 
-            System.getProperty("CHECKER_INFERENCE") + "/dist" : "$System.env.CHECKER_INFERENCE/dist"
-
-        compile fileTree(dir: inferenceDir, include: ['*.jar'])
-    }
-
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile(name: 'ACG Library-release', ext:'aar')
@@ -97,9 +89,8 @@ if (runSparta) {
             tasks.withType(JavaCompile).all {
                 options.debug = true
                 options.compilerArgs = [
-                        '-processor', 'sparta.checkers.intents.IntentChecker',
+                        '-processor', 'sparta.checkers.FlowChecker',
                         '-AflowPolicy=flow/flow-policy',
-                        '-AcomponentMap=sparta-out/component-map',
                         '-AprintErrorStack'
                 ]
                 options.bootClasspath = System.getProperty("sun.boot.class.path") + ":" + options.bootClasspath
@@ -110,24 +101,9 @@ if (runSparta) {
     }
 }
 
-if (infer) {
-    allprojects {
-        gradle.projectsEvaluated {
-            tasks.withType(JavaCompile).all {
-                options.debug = true
-                options.compilerArgs = [
-                        '-processor', 'checkers.inference.InferenceChecker',
-                        '-Xmaxwarns', '1000', 
-                        '-Xmaxerrs', '1000', 
-                        '-XDignore.symbol.file', 
-                        '-AprintErrorStack', 
-                        '-Awarns'   
-                ]
-                options.bootClasspath = System.getProperty("sun.boot.class.path") + ":" + options.bootClasspath
-                options.fork = true
-                options.forkOptions.jvmArgs += ["-Xbootclasspath/p:${configurations.checkerFrameworkJavac.asPath}"]
-            }
-        }
-    }
-}
-
+/**
+ * Inference, for now:
+ *
+ * $CHECKER_INFERENCE/scripts/inference --typesystem sparta-source -m ROUNDTRIP --hacks --inPlace=true @files.txt -- -cp "/home/tringer/android/platforms/android-23/android.jar:/home/tringer/android/extras/android/support/v4/android-support-v4.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/design/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/ACG\ Library-release/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/8.4.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-maps/8.4.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar:/home/tringer/app-evals/good/pinpoi/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/jars/classes.jar:/home/tringer/sparta/sparta.jar"
+ * $AFU/scripts/insert-annotations-to-source -v -i default.jaif @files.txt
+ */

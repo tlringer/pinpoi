@@ -3,6 +3,8 @@ package io.github.fvasco.pinpoi.importer;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import io.github.fvasco.pinpoi.model.Placemark;
+import sparta.checkers.quals.PolyFlow;
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.io.IOException;
@@ -52,7 +54,8 @@ public class TextImporter extends AbstractImporter {
         }
     }
 
-    private String readLine(final @Source({}) InputStream inputStream) throws IOException {
+    @PolyFlow
+    private String readLine(final InputStream inputStream) throws IOException {
         int pos = 0;
         int b;
         while ((b = inputStream.read()) >= 0) {
@@ -73,7 +76,7 @@ public class TextImporter extends AbstractImporter {
 
 
     @Override
-    protected void importImpl(@NonNull final @Source({}) InputStream inputStream) throws IOException {
+    protected void importImpl(@NonNull final @Sink({}) InputStream inputStream) throws IOException {
         String line;
         while ((line = readLine(inputStream)) != null) {
             final Matcher matcher = LINE_PATTERN.matcher(line);

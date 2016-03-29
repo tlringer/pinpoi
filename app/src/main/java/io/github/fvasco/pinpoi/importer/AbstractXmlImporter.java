@@ -6,6 +6,8 @@ import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.util.Util;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.io.IOException;
@@ -19,9 +21,10 @@ import java.util.Iterator;
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public abstract class AbstractXmlImporter extends AbstractImporter {
     protected static final @Source({}) String DOCUMENT_TAG = "<XML>";
-    protected final XmlPullParser parser;
+    protected final @Sink({}) XmlPullParser parser;
     protected Placemark placemark;
     protected String text;
     protected String tag;
@@ -29,14 +32,14 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
 
     public AbstractXmlImporter() {
         try {
-            parser = Util.XML_PULL_PARSER_FACTORY.newPullParser();
+            parser = (/*@Sink({})*/ XmlPullParser) Util.XML_PULL_PARSER_FACTORY.newPullParser();
         } catch (XmlPullParserException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    protected void importImpl(@NonNull final @Source({}) InputStream is) throws IOException {
+    protected void importImpl(@NonNull final InputStream is) throws IOException {
         try {
             parser.setInput(is, null);
             int eventType = parser.getEventType();

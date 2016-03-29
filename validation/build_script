@@ -5,7 +5,7 @@
 javac -cp soot-trunk.jar:android.jar ./StaticEventValidator.java
 
 cd ..
-./gradlew build
+gradle build
 
 cd ./validation
 
@@ -16,7 +16,7 @@ java -ea -cp ../app/src:soot-trunk.jar:android.jar:./ StaticEventValidator -proc
 # add failOnError after StaticEventValidator to fail on error
 
 cd ../app
-../gradlew compileDebugJavaWithJavac -PrunSparta=true
+gradle compileDebugJavaWithJavac -PrunSparta=true
 cd ..
-./gradlew clean
-./gradlew build
+gradle clean
+gradle build

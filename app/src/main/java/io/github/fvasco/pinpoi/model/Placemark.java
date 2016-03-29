@@ -1,11 +1,8 @@
 package io.github.fvasco.pinpoi.model;
 
 import sparta.checkers.quals.Source;
-import sparta.checkers.quals.Sink;
 
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
-import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Container for placemark
@@ -14,63 +11,63 @@ import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
  */
 public class Placemark implements PlacemarkBase {
 
-    private @Sink(SHARED_PREFERENCES) @Source({}) long id;
-    private @Sink(DISPLAY) String name;
-    private @Sink({DATABASE, DISPLAY}) String description;
-    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude = Float.NaN;
-    private @Sink({DATABASE, DISPLAY}) @Source({}) long collectionId;
+    private @Source(DATABASE) long id;
+    private @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String name;
+    private @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String description;
+    private @Source({DATABASE, USER_INPUT}) float latitude = Float.NaN;
+    private @Source({DATABASE, USER_INPUT}) float longitude = Float.NaN;
+    private @Source(DATABASE) long collectionId;
 
-    public @Sink({DATABASE, DISPLAY}) long getCollectionId() {
+    public @Source(DATABASE) long getCollectionId() {
         return collectionId;
     }
 
-    public void setCollectionId(@Sink({DATABASE, DISPLAY}) long collectionId) {
+    public void setCollectionId(@Source(DATABASE) long collectionId) {
         this.collectionId = collectionId;
     }
 
-    public @Sink(SHARED_PREFERENCES) long getId() {
+    public @Source(DATABASE) long getId() {
         return id;
     }
 
-    public void setId(@Sink(SHARED_PREFERENCES) long id) {
+    public void setId(@Source(DATABASE) long id) {
         this.id = id;
     }
 
-    public @Sink(DISPLAY) String getName() {
+    public @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String getName() {
         return name;
     }
 
-    public void setName(@Sink(DISPLAY) String name) {
+    public void setName(@Source({DATABASE, INTENT, SHARED_PREFERENCES}) String name) {
         this.name = name;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getDescription() {
+    public @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String getDescription() {
         return description;
     }
 
-    public void setDescription(@Sink({DATABASE, DISPLAY}) String description) {
+    public void setDescription(@Source({DATABASE, INTENT, SHARED_PREFERENCES}) String description) {
         this.description = description;
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLongitude() {
+    public @Source({DATABASE, USER_INPUT}) float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(@Sink({DATABASE, DISPLAY}) float longitude) {
+    public void setLongitude(@Source({DATABASE, USER_INPUT}) float longitude) {
         this.longitude = longitude;
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLatitude() {
+    public @Source({DATABASE, USER_INPUT}) float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(@Sink({DATABASE, DISPLAY}) float latitude) {
+    public void setLatitude(@Source({DATABASE, USER_INPUT}) float latitude) {
         this.latitude = latitude;
     }
 
     @Override
-    public String toString() {
+    public @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String toString() {
         return name;
     }
 }

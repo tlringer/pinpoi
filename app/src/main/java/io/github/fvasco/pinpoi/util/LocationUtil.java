@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -14,6 +13,7 @@ import com.acg.lib.model.Location;
 import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.PlacemarkDetailActivity;
 import io.github.fvasco.pinpoi.model.PlacemarkBase;
+import sparta.checkers.quals.Source;
 
 import java.io.*;
 import java.util.Collections;
@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+
+import static sparta.checkers.quals.FlowPermissionString.FILESYSTEM;
 
 /**
  * Location related utility
@@ -33,7 +35,8 @@ public class LocationUtil {
     /**
      * Store resolved address
      */
-    private static final @Source({}) LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String> ADDRESS_CACHE = new /*@Source({})*/ LruCache<>(512);
+    private static final @Source(FILESYSTEM) LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String> ADDRESS_CACHE =
+            (/*@Source({})*/ LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String>) new /*@Source({})*/ LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String>(512);
     private static @Source({}) Geocoder geocoder;
     private static volatile @Source({}) File addressCacheFile;
 

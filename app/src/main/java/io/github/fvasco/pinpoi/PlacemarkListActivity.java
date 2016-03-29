@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi;
 
-import sparta.checkers.quals.Source;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,9 +35,13 @@ import io.github.fvasco.pinpoi.util.LocationUtil;
 import io.github.fvasco.pinpoi.util.Util;
 import sparta.checkers.quals.Extra;
 import sparta.checkers.quals.IntentMap;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * An activity representing a list of Placemarks. This activity
@@ -72,7 +75,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
      */
     private @Source({}) boolean mTwoPane;
     private @Source({}) PlacemarkDao placemarkDao;
-    private @Source({}) long /*@Source({})*/ [] placemarkIdArray;
+    private @Source(DATABASE) long /*@Source(DATABASE)*/ [] placemarkIdArray;
     private @Source({}) PlacemarkDetailFragment fragment;
     private @Source({}) Coordinates searchCoordinate;
     private @Source({"INTENT"}) int range;
@@ -99,7 +102,6 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.placemark_list);
         mapWebView = (WebView) findViewById(R.id.mapWebView);
 
-        @IntentMap({@Extra(key=ARG_SHOW_MAP)})
         Intent intent = getIntent();
         if (savedInstanceState == null
                 ? intent.getBooleanExtra(ARG_SHOW_MAP, false)
@@ -130,7 +132,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String permissions[], @Source(USER_INPUT) @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_SHOW_MAP && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             setupWebView(mapWebView);
@@ -172,13 +174,13 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         recyclerView.setVisibility(View.VISIBLE);
         final RecyclerView.Adapter oldAdapter = recyclerView.getAdapter();
         if (oldAdapter == null || oldAdapter.getItemCount() == 0) {
-            final SimpleItemRecyclerViewAdapter adapter = new SimpleItemRecyclerViewAdapter();
+            final @Source(DATABASE) SimpleItemRecyclerViewAdapter adapter = (/*@Source(DATABASE)*/ SimpleItemRecyclerViewAdapter) new SimpleItemRecyclerViewAdapter();
             recyclerView.setAdapter(adapter);
-            searchPoi(new Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>>() {
+            searchPoi(new Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>>() {
                 @Override
-                public void accept(@Source({}) Collection</*@Source({})*/ PlacemarkSearchResult> placemarks) {
+                public void accept(@Source(DATABASE) Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarks) {
                     // create array in background thread
-                    final @Source({}) PlacemarkSearchResult[] placemarksArray =
+                    final @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarksArray =
                             placemarks.toArray(new PlacemarkSearchResult[placemarks.size()]);
                     Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
                         @Override
@@ -191,7 +193,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         }
     }
 
-    private void searchPoi(final @NonNull @Source({}) Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>> placemarksConsumer) {
+    private void searchPoi(final @NonNull @Source(DATABASE) Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>> placemarksConsumer) {
         // load parameters
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
@@ -225,8 +227,10 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         // create string set of collection id
         // for preference
         // and deferred job
-        final Set</*@Source({"INTENT"})*/ String> collectionIdSet = new TreeSet<>();
-        final List</*@Source({"INTENT"})*/ Long> collectionIdList = new ArrayList<>(collectionIds.length);
+        final @Sink(SHARED_PREFERENCES) Set</*@Sink(SHARED_PREFERENCES)*/ String> collectionIdSet =
+                (/*@Sink(SHARED_PREFERENCES)*/ TreeSet</*@Sink(SHARED_PREFERENCES)*/ String>) new /*@Sink(SHARED_PREFERENCES)*/ TreeSet</*@Sink(SHARED_PREFERENCES)*/ String>();
+        final @Sink(DATABASE) List</*@Sink(DATABASE)*/ Long> collectionIdList =
+                (/*@Sink(DATABASE)*/ ArrayList</*@Sink(DATABASE)*/ Long>) new /*@Sink(DATABASE)*/ ArrayList</*@Sink(DATABASE)*/ Long>(collectionIds.length);
         for (final long id : collectionIds) {
             collectionIdList.add(id);
             collectionIdSet.add(String.valueOf(id));
@@ -247,7 +251,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            final Collection</*@Source({})*/ PlacemarkSearchResult> placemarks =
+                            final @Source(DATABASE) Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarks =
                                     placemarkDao.findAllPlacemarkNear(searchCoordinate,
                                             range, nameFilterFinal, favourite, collectionIdList);
                             Log.d(PlacemarkListActivity.class.getSimpleName(), "searchPoi progress placemarks.size()=" + placemarks.size());
@@ -270,7 +274,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
     }
 
     @JavascriptInterface
-    public void openPlacemark(final @Source({}) long placemarkId) {
+    public void openPlacemark(final @Sink({INTENT, BUNDLE}) long placemarkId) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putLong(PlacemarkDetailFragment.ARG_PLACEMARK_ID, placemarkId);
@@ -324,11 +328,11 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
         webSettings.setSupportMultipleWindows(false);
 
-        searchPoi(new Consumer</*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult>>() {
+        searchPoi(new Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>>() {
             @Override
-            public void accept(/*@Source({})*/ Collection</*@Source({})*/ PlacemarkSearchResult> placemarksSearchResult) {
+            public void accept(/*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarksSearchResult) {
                 // this list helps to divide placemarks in category
-                final StringBuilder html = new StringBuilder(1024 + placemarksSearchResult.size() * 256);
+                final @Sink({INTERNET, WRITE_LOGS}) StringBuilder html = (/*@Sink({INTERNET, WRITE_LOGS})*/ StringBuilder) new StringBuilder(1024 + placemarksSearchResult.size() * 256);
                 final String leafletVersion = "0.7.7";
                 int zoom = (int) (Math.log(40_000_000 / range) / Math.log(2));
                 if (zoom < 0) zoom = 0;
@@ -362,13 +366,13 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                 int placemarkPosition = 0;
                 // distance to placemark
                 final @Source({}) float[] floatArray = new float[1];
-                final DecimalFormat decimalFormat = new DecimalFormat();
+                final @Source({}) DecimalFormat decimalFormat = (/*@Source({})*/ DecimalFormat) new DecimalFormat();
                 for (final PlacemarkSearchResult psr : placemarksSearchResult) {
                     ++placemarkPosition;
                     Location.distanceBetween(searchCoordinate.latitude, searchCoordinate.longitude,
                             psr.getLatitude(), psr.getLongitude(),
                             floatArray);
-                    final int distance = (int) floatArray[0];
+                    final @Source({}) int distance = (/*@Source({})*/ int) floatArray[0];
 
                     html.append("L.marker([" + psr.getLatitude() + "," + psr.getLongitude() + "],{");
                     if (psr.isFlagged()) {
@@ -406,33 +410,33 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
     }
 
     public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView./*@Source({})*/ Adapter<SimpleItemRecyclerViewAdapter./*@Source({})*/ ViewHolder> {
+            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final @Source({}) DecimalFormat decimalFormat = new /*@Source({})*/ DecimalFormat();
-        private final @Source({}) StringBuilder stringBuilder = new /*@Source({})*/ StringBuilder();
+        private final @Sink(DISPLAY) StringBuilder stringBuilder = (/*@Sink(DISPLAY)*/ StringBuilder) new /*@Sink(DISPLAY)*/ StringBuilder();
         private final @Source({}) float /*@Source({})*/ [] floatArray = new /*@Source({})*/ float /*@Source({})*/ [2];
-        private @Source({}) PlacemarkSearchResult /*@Source({})*/ [] placemarks;
+        private @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarks;
 
         public SimpleItemRecyclerViewAdapter() {
             decimalFormat.setMinimumFractionDigits(1);
             decimalFormat.setMaximumFractionDigits(1);
         }
 
-        public void setPlacemarks(@NonNull final @Source({}) PlacemarkSearchResult /*@Source({})*/ [] placemarks) {
+        public void setPlacemarks(@NonNull final @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarks) {
             Objects.requireNonNull(placemarks);
             this.placemarks = placemarks;
             notifyDataSetChanged();
         }
 
         @Override
-        public @Source({}) ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(android.R.layout.simple_list_item_1, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final @Source({}) ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
             final PlacemarkSearchResult placemark = placemarks[position];
             holder.placemark = placemark;
             Location.distanceBetween(searchCoordinate.latitude, searchCoordinate.longitude,
@@ -479,13 +483,13 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         }
 
         @Override
-        public @Source({}) int getItemCount() {
+        public int getItemCount() {
             return placemarks == null ? 0 : placemarks.length;
         }
 
-        public class ViewHolder extends RecyclerView./*@Source({})*/ ViewHolder {
+        public class ViewHolder extends RecyclerView./*@Source(DATABASE)*/ ViewHolder {
             public final @Source({}) TextView view;
-            public @Source({}) PlacemarkSearchResult placemark;
+            public @Source(DATABASE) PlacemarkSearchResult placemark;
 
             public ViewHolder(@Source({}) View view) {
                 super(view);
@@ -493,7 +497,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
             }
 
             @Override
-            public @Source({}) String toString() {
+            public @Source(DATABASE) String toString() {
                 return super.toString() + " '" + placemark + "'";
             }
         }

@@ -1,9 +1,8 @@
 package io.github.fvasco.pinpoi.model;
 
-import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Placemark base information
@@ -12,9 +11,9 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  */
 public interface PlacemarkBase {
 
-    @Sink({DATABASE, DISPLAY}) String getName();
+    @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String getName();
 
-    @Sink({DATABASE, DISPLAY}) float getLatitude();
+    @Source({DATABASE, USER_INPUT}) float getLatitude();
 
-    @Sink({DATABASE, DISPLAY}) float getLongitude();
+    @Source({DATABASE, USER_INPUT}) float getLongitude();
 }

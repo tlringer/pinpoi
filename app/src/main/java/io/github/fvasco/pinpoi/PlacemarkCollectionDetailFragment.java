@@ -18,14 +18,12 @@ import io.github.fvasco.pinpoi.importer.ImporterFacade;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Util;
-import sparta.checkers.quals.Extra;
-import sparta.checkers.quals.IntentMap;
-import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.io.File;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * A fragment representing a single Placemark Collection detail screen.
@@ -42,8 +40,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     private static final @Source({}) int FILE_SELECT_CODE = 1;
     private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance();
 
-    @Source(DATABASE)
-    private PlacemarkCollection placemarkCollection;
+    private @Source(DATABASE) PlacemarkCollection placemarkCollection;
     private @Source({}) EditText descriptionText;
     private @Source({}) TextView sourceText;
     private @Source({}) AutoCompleteTextView categoryText;
@@ -62,7 +59,6 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         placemarkCollectionDao.open();
 
-        @IntentMap({@Extra(key = ARG_PLACEMARK_COLLECTION_ID)})
         Bundle arguments = getArguments();
 
         if (arguments.containsKey(ARG_PLACEMARK_COLLECTION_ID)) {
@@ -88,9 +84,12 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
         lastUpdateText = ((TextView) rootView.findViewById(R.id.last_update));
         poiCountText = ((TextView) rootView.findViewById(R.id.poi_count));
         categoryText = ((AutoCompleteTextView) rootView.findViewById(R.id.category));
-        categoryText.setAdapter(new ArrayAdapter<>(container.getContext(),
+
+        ArrayAdapter</*@Source(DATABASE)*/ String> adapter = new ArrayAdapter</*@Source(DATABASE)*/ String>(container.getContext(),
                 android.R.layout.simple_dropdown_item_1line,
-                placemarkCollectionDao.findAllPlacemarkCollectionCategory()));
+                placemarkCollectionDao.findAllPlacemarkCollectionCategory());
+        categoryText.setAdapter(adapter);
+
         rootView.findViewById(R.id.browseBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +121,6 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (placemarkCollection != null) {
-            outState = (/*@IntentMap({@Extra(key = ARG_PLACEMARK_COLLECTION_ID, sink = DATABASE)}*/ Bundle) outState;
             outState.putLong(ARG_PLACEMARK_COLLECTION_ID, placemarkCollection.getId());
         }
         super.onSaveInstanceState(outState);
@@ -149,6 +147,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                 placemarkCollectionDao.update(placemarkCollection);
             }
         } catch (Exception e) {
+            e = (/*@Source({})*/ Exception) e;
             Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "savePlacemarkCollection", e);
             Toast.makeText(getActivity(), R.string.validation_error, Toast.LENGTH_SHORT).show();
         }
@@ -187,13 +186,14 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                     final ImporterFacade importerFacade = new ImporterFacade();
                     importerFacade.setProgressDialog(progressDialog);
                     importerFacade.setProgressDialogMessageFormat(getString(R.string.poi_count));
-                    final int count = importerFacade.importPlacemarks(placemarkCollection);
+                    final @Source(DATABASE) int count = (/*@Source(DATABASE)*/ int) importerFacade.importPlacemarks(placemarkCollection);
                     if (count == 0) {
                         Util.showToast(getString(R.string.error_update, placemarkCollection.getName(), getString(R.string.n_placemarks_found, 0)), Toast.LENGTH_LONG);
                     } else {
                         Util.showToast(getString(R.string.update_collection_success, placemarkCollection.getName(), count), Toast.LENGTH_LONG);
                     }
                 } catch (Exception e) {
+                    e = (/*@Source({})*/ Exception) e;
                     Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "updatePlacemarkCollection", e);
                     Util.showToast(getString(R.string.error_update, placemarkCollection.getName(), e.getLocalizedMessage()), Toast.LENGTH_LONG);
                 } finally {
@@ -209,7 +209,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
         });
     }
 
-    public void renamePlacemarkCollection(@Sink(DATABASE) String newPlacemarkCollectionName) {
+    public void renamePlacemarkCollection(@Source(USER_INPUT) String newPlacemarkCollectionName) {
         if (!Util.isEmpty(newPlacemarkCollectionName)
                 && placemarkCollectionDao.findPlacemarkCollectionByName(newPlacemarkCollectionName) == null) {
             placemarkCollection.setName(newPlacemarkCollectionName);

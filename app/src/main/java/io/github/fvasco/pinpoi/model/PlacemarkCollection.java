@@ -1,10 +1,9 @@
 package io.github.fvasco.pinpoi.model;
 
 import sparta.checkers.quals.Source;
-import sparta.checkers.quals.Sink;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * A collection, aggregator for {@linkplain Placemark}
@@ -13,75 +12,75 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  */
 public class PlacemarkCollection {
 
-    private @Sink(DATABASE) @Source({}) long id;
-    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String name;
-    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String description;
-    private @Sink({DATABASE, DISPLAY}) @Source({"USER_INPUT"}) String category;
-    private @Sink({DATABASE, DISPLAY}) @Source({}) String source;
-    private @Sink({DATABASE, DISPLAY}) @Source({"READ_TIME"}) long lastUpdate;
-    private @Sink({DATABASE, DISPLAY}) @Source({}) int poiCount;
+    private @Source({DATABASE}) long id;
+    private @Source({DATABASE, USER_INPUT}) String name;
+    private @Source({DATABASE, USER_INPUT}) String description;
+    private @Source({DATABASE, USER_INPUT}) String category;
+    private @Source({DATABASE}) String source;
+    private @Source({"READ_TIME", DATABASE}) long lastUpdate;
+    private @Source({DATABASE}) int poiCount;
 
-    public @Sink({DATABASE, DISPLAY}) int getPoiCount() {
+    public @Source({DATABASE}) int getPoiCount() {
         return poiCount;
     }
 
-    public void setPoiCount(@Sink({DATABASE, DISPLAY}) int poiCount) {
+    public void setPoiCount(@Source({DATABASE}) int poiCount) {
         this.poiCount = poiCount;
     }
 
     /**
      * Last collection update, unix time
      */
-    public @Sink({DATABASE, DISPLAY}) long getLastUpdate() {
+    public @Source({"READ_TIME", DATABASE}) long getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(@Sink({DATABASE, DISPLAY}) long lastUpdate) {
+    public void setLastUpdate(@Source({"READ_TIME", DATABASE}) long lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getCategory() {
+    public @Source({DATABASE, USER_INPUT}) String getCategory() {
         return category;
     }
 
-    public void setCategory(@Sink({DATABASE, DISPLAY}) String category) {
+    public void setCategory(@Source({DATABASE, USER_INPUT}) String category) {
         this.category = category;
     }
 
-    public @Sink(DISPLAY) long getId() {
+    public @Source({DATABASE}) long getId() {
         return id;
     }
 
-    public void setId(@Sink(DISPLAY) long id) {
+    public void setId(@Source({DATABASE}) long id) {
         this.id = id;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getName() {
+    public @Source({DATABASE, USER_INPUT}) String getName() {
         return name;
     }
 
-    public void setName(@Sink({DATABASE, DISPLAY}) String name) {
+    public void setName(@Source({DATABASE, USER_INPUT}) String name) {
         this.name = name;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getDescription() {
+    public @Source({DATABASE, USER_INPUT}) String getDescription() {
         return description;
     }
 
-    public void setDescription(@Sink({DATABASE, DISPLAY}) String description) {
+    public void setDescription(@Source({DATABASE, USER_INPUT}) String description) {
         this.description = description;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getSource() {
+    public @Source({DATABASE}) String getSource() {
         return source;
     }
 
-    public void setSource(@Sink({DATABASE, DISPLAY}) String source) {
+    public void setSource(@Source({DATABASE}) String source) {
         this.source = source;
     }
 
     @Override
-    public @Source({"USER_INPUT"}) String toString() {
+    public @Source({"DATABASE", "USER_INPUT"}) String toString() {
         return name;
     }
 }

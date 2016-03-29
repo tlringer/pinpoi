@@ -1,41 +1,40 @@
 package io.github.fvasco.pinpoi.model;
 
-import sparta.checkers.quals.Source;
 import io.github.fvasco.pinpoi.util.Coordinates;
-import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.util.Collection;
 
 import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.INTENT;
+import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
 
 /**
  * @author Placemark result with annotation information.
  *         Used by {@linkplain io.github.fvasco.pinpoi.dao.PlacemarkDao#findAllPlacemarkNear(Coordinates, double, Collection)}
  */
 public final class PlacemarkSearchResult extends Coordinates implements PlacemarkBase {
-    private final @Sink(DATABASE) @Source({}) long id;
-    private final @Sink({DATABASE, DISPLAY}) @Source({}) String name;
-    private final @Sink({DATABASE, DISPLAY}) @Source({}) boolean flagged;
+    private final @Source(DATABASE) long id;
+    private final @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String name;
+    private final @Source(DATABASE) boolean flagged;
 
-
-    public PlacemarkSearchResult(final @Sink(DATABASE) long id, @Sink({DATABASE, DISPLAY}) float latitude, @Sink({DATABASE, DISPLAY}) float longitude,
-                                 final @Sink({DATABASE, DISPLAY}) String name, final @Sink({DATABASE, DISPLAY}) boolean flagged) {
+    public PlacemarkSearchResult(final @Source(DATABASE) long id, @Source(DATABASE) float latitude, @Source(DATABASE) float longitude,
+                                 final @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String name, final @Source(DATABASE) boolean flagged) {
         super(latitude, longitude);
         this.id = id;
         this.name = name;
         this.flagged = flagged;
     }
 
-    public @Sink({DATABASE, DISPLAY}) String getName() {
+    public @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String getName() {
         return name;
     }
 
-    public @Sink({DATABASE, DISPLAY}) @Source({}) boolean isFlagged() {
+    public @Source(DATABASE) boolean isFlagged() {
         return flagged;
     }
 
-    public @Sink(DATABASE) @Source({}) long getId() {
+    public @Source(DATABASE) long getId() {
 
         return id;
     }

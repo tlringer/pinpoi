@@ -1,15 +1,13 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.location.Location;
 import io.github.fvasco.pinpoi.model.Placemark;
-import sparta.checkers.quals.PolyFlow;
 import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.util.Objects;
 
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Simple coordinates
@@ -17,30 +15,20 @@ import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
  * @author Francesco Vasco
  */
 public class Coordinates implements Cloneable {
-    public final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude;
-    public final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude;
+    public final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float latitude;
+    public final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float longitude;
 
-    public Coordinates(final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float latitude, final @Sink({DATABASE, DISPLAY}) @Source({"INTENT"}) float longitude) {
+    public Coordinates(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float latitude, final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    @PolyFlow
-    public static @Source({}) Coordinates fromPlacemark(@Source({}) Placemark placemark) {
+    public static @Source({}) Coordinates fromPlacemark(Placemark placemark) {
         return new Coordinates(placemark.getLatitude(), placemark.getLongitude());
     }
 
     @Override
-    public @Source({}) Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e);
-        }
-    }
-
-    @Override
-    public boolean equals(@Source({}) Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinates that = (Coordinates) o;
@@ -53,19 +41,19 @@ public class Coordinates implements Cloneable {
         return Objects.hash(latitude, longitude);
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLatitude() {
+    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float getLatitude() {
         return latitude;
     }
 
-    public @Sink({DATABASE, DISPLAY}) float getLongitude() {
+    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float getLongitude() {
         return longitude;
     }
 
-    public Coordinates withLatitude(final @Sink({DATABASE, DISPLAY}) float newLatitude) {
+    public Coordinates withLatitude(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float newLatitude) {
         return new Coordinates(newLatitude, longitude);
     }
 
-    public Coordinates withLongitude(final @Sink({DATABASE, DISPLAY}) float newLongitude) {
+    public Coordinates withLongitude(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float newLongitude) {
         return new Coordinates(latitude, newLongitude);
     }
 
@@ -76,7 +64,7 @@ public class Coordinates implements Cloneable {
     }
 
     @Override
-    public @Source({"INTENT"}) String toString() {
+    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) String toString() {
         return Float.toString(latitude) + ',' + Float.toString(longitude);
     }
 }

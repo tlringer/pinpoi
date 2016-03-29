@@ -25,7 +25,7 @@ public class BackupManager {
     private final @Source({}) AbstractDao /*@Source({})*/ [] daos;
 
     public BackupManager(final AbstractDao... daos) {
-        this.daos = daos;
+        this.daos = (/*@Source({})*/ AbstractDao /*@Source({})*/ []) daos;
     }
 
     public void create(final File file) throws IOException {
@@ -55,7 +55,7 @@ public class BackupManager {
         Log.i(BackupManager.class.getSimpleName(), "Created backup " + file.getAbsolutePath() + " size=" + file.length());
     }
 
-    public void restore(final File file) throws IOException {
+    public void restore(final @Source({}) File file) throws IOException {
         Log.i(BackupManager.class.getSimpleName(), "Restore backup " + file.getAbsolutePath() + " size=" + file.length());
         try (final ZipFile zipFile = new ZipFile(file)) {
             for (final AbstractDao dao : daos) {

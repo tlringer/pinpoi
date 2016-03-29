@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,15 +10,13 @@ import android.support.annotation.NonNull;
 import android.support.design.BuildConfig;
 import android.util.Log;
 import android.widget.Toast;
-
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+import sparta.checkers.quals.PolyFlow;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +24,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Miscellaneous common utility
@@ -38,8 +37,8 @@ public final class Util {
     public static final ExecutorService EXECUTOR =
             Executors.unconfigurableExecutorService(Executors.newScheduledThreadPool(3));
     public static final XmlPullParserFactory XML_PULL_PARSER_FACTORY;
-    private static final @Source({}) Pattern HTML_PATTERN = Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
-    private static @Source({}) Context APPLICATION_CONTEXT;
+    private static final @Source({}) Pattern HTML_PATTERN = (/*@Source({})*/ Pattern) Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
+    private static @Sink({}) Context APPLICATION_CONTEXT;
 
     static {
         HttpURLConnection.setFollowRedirects(true);
@@ -65,7 +64,7 @@ public final class Util {
     }
 
     @NonNull
-    public static Context getApplicationContext() {
+    public static @Sink({}) Context getApplicationContext() {
         Objects.requireNonNull(APPLICATION_CONTEXT, "No context defined");
         return APPLICATION_CONTEXT;
     }
@@ -75,7 +74,7 @@ public final class Util {
         showToast(isEmpty(message) ? "Error" : message, Toast.LENGTH_LONG);
     }
 
-    public static void showToast(@NonNull final CharSequence message, final int duration) {
+    public static void showToast(@NonNull @Sink({DISPLAY, WRITE_LOGS}) final CharSequence message, final int duration) {
         if (io.github.fvasco.pinpoi.BuildConfig.DEBUG) {
             Log.i(Util.class.getSimpleName(), message.toString());
         }
@@ -92,10 +91,12 @@ public final class Util {
      *
      * @return true if string {@linkplain String#isEmpty()} or null
      */
+    @PolyFlow
     public static boolean isEmpty(final CharSequence text) {
         return text == null || text.length() == 0;
     }
 
+    @PolyFlow
     public static boolean isEmpty(final Collection c) {
         return c == null || c.isEmpty();
     }
@@ -103,6 +104,7 @@ public final class Util {
     /**
      * Try to detect HTML text
      */
+    @PolyFlow
     public static boolean isHtml(final CharSequence text) {
         return text != null && HTML_PATTERN.matcher(text).find();
     }
@@ -110,6 +112,7 @@ public final class Util {
     /**
      * Check if text is a uri
      */
+    @PolyFlow
     public static boolean isUri(final String text) {
         return text != null && text.matches("\\w+:/{1,3}\\w+.+");
     }
@@ -117,8 +120,8 @@ public final class Util {
     /**
      * Escape text for Javascript
      */
-    public static CharSequence escapeJavascript(final CharSequence text) {
-        final StringBuilder out = new StringBuilder(text.length() + text.length() / 2);
+    public static @Sink({DISPLAY, WRITE_LOGS, INTERNET}) CharSequence escapeJavascript(@Sink({DISPLAY, WRITE_LOGS, INTERNET}) final CharSequence text) {
+        final @Sink({DISPLAY, WRITE_LOGS, INTERNET}) StringBuilder out = (/*@Sink({DISPLAY, WRITE_LOGS, INTERNET})*/ StringBuilder) new StringBuilder(text.length() + text.length() / 2);
         for (int i = 0, max = text.length(); i < max; ++i) {
             final char c = text.charAt(i);
             switch (c) {
@@ -160,11 +163,13 @@ public final class Util {
             @Source({})
             File[] files = dir.listFiles(new FileFilter() {
                 @Override
-                public @Source({"FILESYSTEM"}) boolean accept(File pathname) {
+                public @Source(FILESYSTEM) boolean accept(File pathname) {
                     return pathname.canRead() && !pathname.getName().startsWith(".");
                 }
             });
-            final @Source({"FILESYSTEM"}) String[] fileNames = new String[files.length + 1];
+            final @Source({"FILESYSTEM"}) String /*@Source({"FILESYSTEM"})*/ [] fileNames =
+                    (/*@Source("FILESYSTEM")*/ String  /*@Source({"FILESYSTEM"})*/ []) new String[files.length + 1];
+
             // last is up dir
             fileNames[files.length] = "..";
             for (int i = files.length - 1; i >= 0; --i) {
@@ -201,7 +206,7 @@ public final class Util {
      * @param runnable task to execute in background
      * @param context  dialog context
      */
-    public static void showProgressDialog(final CharSequence title, final CharSequence message,
+    public static void showProgressDialog(final @Sink({DISPLAY, WRITE_LOGS}) CharSequence title, final @Sink(DISPLAY) CharSequence message,
                                           final Runnable runnable, final Context context) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle(title);
@@ -228,6 +233,7 @@ public final class Util {
     /**
      * Safe trim for string, null check
      */
+    @PolyFlow
     public static String trim(String text) {
         return text == null ? null : text.trim();
     }

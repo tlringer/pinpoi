@@ -4,11 +4,14 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static sparta.checkers.quals.FlowPermissionString.WRITE_LOGS;
 
 /**
  * Tomtom OV2 importer
@@ -24,13 +27,13 @@ length-14 bytes: ASCII string specifying the name of the POI
 1 byte: null byte
 */
 public class Ov2Importer extends AbstractImporter {
-    private static @Source({}) int readIntLE(final @Source({}) InputStream is) throws IOException {
+    private static @Sink(WRITE_LOGS) int readIntLE(final @Sink({}) InputStream is) throws IOException {
         return is.read() | is.read() << 8 | is.read() << 16 | is.read() << 24;
     }
 
     @Override
-    protected void importImpl(@NonNull final @Source({}) InputStream inputStream) throws IOException {
-        final DataInputStream dataInputStream = new DataInputStream(inputStream);
+    protected void importImpl(@NonNull final @Sink({}) InputStream inputStream) throws IOException {
+        final @Sink({}) DataInputStream dataInputStream = new /*@Sink({})*/ DataInputStream(inputStream);
         @Source({})
         byte[] nameBuffer = new byte[64];
         for (int rectype = dataInputStream.read(); rectype >= 0; rectype = dataInputStream.read()) {

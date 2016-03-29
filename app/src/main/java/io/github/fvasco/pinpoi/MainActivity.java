@@ -1,5 +1,6 @@
 package io.github.fvasco.pinpoi;
 
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -71,8 +72,8 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
      * searchable range value is this plus {@linkplain #RANGE_MIN}
      */
     private static final @Source({}) int RANGE_MAX_SHIFT = 195;
-    private @Source({"DATABASE","SHARED_PREFERENCES"}) String selectedPlacemarkCategory;
-    private @Source({}) PlacemarkCollection selectedPlacemarkCollection;
+    private @Source({"DATABASE","SHARED_PREFERENCES", "USER_INPUT"}) String selectedPlacemarkCategory;
+    private @Source({"DATABASE"}) PlacemarkCollection selectedPlacemarkCollection;
     private @Source({}) Button categoryButton;
     private @Source({}) Button collectionButton;
     private @Source({}) SeekBar rangeSeek;
@@ -208,9 +209,6 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
             case R.id.debug_create_db:
                 DebugUtil.setUpDebugDatabase(this);
                 return true;
-            case R.id.debug_import_collection:
-                debugImportCollection();
-                return true;
             case R.id.action_web_site:
                 // branch gh-pages
                 Intent i = new Intent(Intent.ACTION_VIEW);
@@ -221,7 +219,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void setPlacemarkCategory(@Source({"DATABASE","SHARED_PREFERENCES"}) String placemarkCategory) {
+    private void setPlacemarkCategory(@Source({"DATABASE","SHARED_PREFERENCES", "USER_INPUT"}) String placemarkCategory) {
         if (Util.isEmpty(placemarkCategory)) {
             placemarkCategory = null;
         }
@@ -239,14 +237,15 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
         }
     }
 
-    private void setPlacemarkCollection(@Source({}) PlacemarkCollection placemarkCollection) {
+    private void setPlacemarkCollection(@Source("DATABASE") PlacemarkCollection placemarkCollection) {
         selectedPlacemarkCollection = placemarkCollection;
         collectionButton.setText(placemarkCollection == null ? null : placemarkCollection.getName());
     }
 
     public void openPlacemarkCategoryChooser(@Source({}) View view) {
         try (final PlacemarkCollectionDao collectionDao = PlacemarkCollectionDao.getInstance().open()) {
-            final List</*@Source({})*/ String> categories = collectionDao.findAllPlacemarkCollectionCategory();
+            final @Source({}) List</*@Source({"DATABASE"})*/ String> categories =
+                    (/*@Source({})*/ List</*@Source({"DATABASE"})*/ String>) collectionDao.findAllPlacemarkCollectionCategory();
             categories.add(0, getString(R.string.any_filter));
             new AlertDialog.Builder(view.getContext())
                     .setTitle(getString(R.string.collection))
@@ -263,12 +262,12 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
 
     public void openPlacemarkCollectionChooser(@Source({}) View view) {
         try (final PlacemarkCollectionDao collectionDao = PlacemarkCollectionDao.getInstance().open()) {
-            final List</*@Source({})*/ PlacemarkCollection> placemarkCollections = selectedPlacemarkCategory == null
+            final @Source("DATABASE") List</*@Source({"DATABASE"})*/ PlacemarkCollection> placemarkCollections = selectedPlacemarkCategory == null
                     ? collectionDao.findAllPlacemarkCollection()
                     : collectionDao.findAllPlacemarkCollectionInCategory(selectedPlacemarkCategory);
-            final List</*@Source({"USER_INPUT"})*/ String> placemarkCollectionNames = new ArrayList<>(placemarkCollections.size());
+            final List</*@Source({"USER_INPUT", "DATABASE"})*/ String> placemarkCollectionNames = new ArrayList<>(placemarkCollections.size());
             // skip empty collections
-            for (final Iterator</*@Source({})*/ PlacemarkCollection> iterator = placemarkCollections.iterator(); iterator.hasNext(); ) {
+            for (final Iterator</*@Source({"DATABASE"})*/ PlacemarkCollection> iterator = placemarkCollections.iterator(); iterator.hasNext(); ) {
                 final PlacemarkCollection placemarkCollection = iterator.next();
                 if (placemarkCollection.getPoiCount() == 0) {
                     iterator.remove();
@@ -384,11 +383,11 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
 
     public void onSearchPoi(@Source({}) View view) {
         try {
-            @Source({})
-            long[] collectionsIds;
+            @Source({"DATABASE"})
+            long /*@Source({"DATABASE"})*/ [] collectionsIds;
             if (selectedPlacemarkCollection == null) {
                 try (final PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance().open()) {
-                    final List</*@Source({})*/ PlacemarkCollection> collections = selectedPlacemarkCategory == null
+                    final List</*@Source({"DATABASE"})*/ PlacemarkCollection> collections = selectedPlacemarkCategory == null
                             ? placemarkCollectionDao.findAllPlacemarkCollection()
                             : placemarkCollectionDao.findAllPlacemarkCollectionInCategory(selectedPlacemarkCategory);
                     collectionsIds = new long[collections.size()];
@@ -514,22 +513,11 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                 }, this);
     }
 
-    private void debugImportCollection() {
-        if (!BuildConfig.DEBUG) throw new Error();
-
-        Uri uri = new Uri.Builder().scheme("http").authority("my.poi.server")
-                .appendEncodedPath("/dir/subdir/poisource.ov2")
-                .appendQueryParameter("q", "customValue")
-                .build();
-        final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
-    }
-
     /**
      * Init search range label
      */
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+    public void onProgressChanged(SeekBar seekBar, @Sink("DISPLAY") int progress, boolean fromUser) {
         rangeLabel.setText(getString(R.string.search_range, progress + RANGE_MIN));
     }
 
@@ -543,7 +531,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String permissions[], @Source("USER_INPUT") @NonNull int[] grantResults) {
         final boolean granted = grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         switch (requestCode) {

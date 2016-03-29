@@ -15,6 +15,8 @@ import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.ProgressDialogInputStream;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
 import java.io.*;
@@ -23,6 +25,8 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
+
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Importer facade for:
@@ -39,7 +43,8 @@ import java.util.concurrent.*;
  *
  * @author Francesco Vasco
  */
-public class ImporterFacade implements Consumer<Placemark> {
+@PolyFlowReceiver
+public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consumer</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark> {
 
     /**
      * Signpost for end of elaboration
@@ -47,9 +52,11 @@ public class ImporterFacade implements Consumer<Placemark> {
     private final @Source({}) Placemark STOP_PLACEMARK = new /*@Source({})*/ Placemark();
     private final @Source({}) PlacemarkDao placemarkDao;
     private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
-    private final @Source({}) BlockingQueue</*@Source({})*/ Placemark> placemarkQueue = new /*@Source({})*/ ArrayBlockingQueue<>(256);
+    private final @Sink({DATABASE, WRITE_LOGS}) BlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark> placemarkQueue =
+            (/*@Sink({DATABASE, WRITE_LOGS})*/ ArrayBlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark>)
+            new /*@Sink({DATABASE, WRITE_LOGS})*/ ArrayBlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark>(256);
     private @Source({}) ProgressDialog progressDialog;
-    private String progressDialogMessageFormat;
+    private @Sink(DISPLAY) String progressDialogMessageFormat;
 
     public ImporterFacade() {
         this(Util.getApplicationContext());
@@ -61,7 +68,7 @@ public class ImporterFacade implements Consumer<Placemark> {
     }
 
     @Nullable
-    static @Source({}) AbstractImporter createImporter(@NonNull final @Source({}) String resource) {
+    static AbstractImporter createImporter(@NonNull @Sink(WRITE_LOGS) final String resource) {
         String path;
         try {
             if (Util.isUri(resource)) {
@@ -122,7 +129,7 @@ public class ImporterFacade implements Consumer<Placemark> {
         this.progressDialog = progressDialog;
     }
 
-    public void setProgressDialogMessageFormat(String progressDialogMessageFormat) {
+    public void setProgressDialogMessageFormat(@Sink(DISPLAY) String progressDialogMessageFormat) {
         this.progressDialogMessageFormat = progressDialogMessageFormat;
     }
 
@@ -133,7 +140,7 @@ public class ImporterFacade implements Consumer<Placemark> {
      *
      * @return imported {@linkplain io.github.fvasco.pinpoi.model.Placemark}
      */
-    public int importPlacemarks(@NonNull final PlacemarkCollection placemarkCollection) throws IOException {
+    public int importPlacemarks(@NonNull final @Sink(DATABASE) PlacemarkCollection placemarkCollection) throws IOException {
         final String resource = placemarkCollection.getSource();
         Objects.requireNonNull(resource, "Null source");
         placemarkCollectionDao.open();
@@ -148,7 +155,7 @@ public class ImporterFacade implements Consumer<Placemark> {
             // insert new placemark
             final Future</*@Source({})*/ Void> importFuture = Util.EXECUTOR.submit(new Callable</*@Source({})*/ Void>() {
                 @Override
-                public @Source({}) Void call() throws Exception {
+                public @Sink(ANY) @Source({}) Void call() throws Exception {
                     InputStream inputStream;
                     final int max;
                     if (resource.startsWith("/")) {
@@ -197,7 +204,7 @@ public class ImporterFacade implements Consumer<Placemark> {
                         placemarkDao.insert(placemark);
                         ++placemarkCount;
                         if (progressDialog != null && progressDialogMessageFormat != null) {
-                            final String message = String.format(progressDialogMessageFormat, placemarkCount);
+                            final @Sink(DISPLAY) String message = String.format(progressDialogMessageFormat, placemarkCount);
                             Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -254,7 +261,7 @@ public class ImporterFacade implements Consumer<Placemark> {
     }
 
     @Override
-    public void accept(@Source({}) Placemark p) {
+    public void accept(@Sink({DATABASE, WRITE_LOGS}) Placemark p) {
         try {
             placemarkQueue.put(p);
         } catch (InterruptedException e) {

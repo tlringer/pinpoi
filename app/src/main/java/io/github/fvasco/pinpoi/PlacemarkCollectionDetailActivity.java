@@ -1,6 +1,5 @@
 package io.github.fvasco.pinpoi;
 
-import sparta.checkers.quals.Source;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,9 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-
 import io.github.fvasco.pinpoi.util.DismissOnClickListener;
 import io.github.fvasco.pinpoi.util.Util;
+import sparta.checkers.quals.Source;
+
+import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * An activity representing a single Placemark Collection detail screen. This
@@ -113,7 +114,7 @@ public class PlacemarkCollectionDetailActivity extends /*@Source({})*/ AppCompat
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull @Source(USER_INPUT) int[] grantResults) {
         if (requestCode == PERMISSION_UPDATE && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             updatePlacemarkCollection(null);

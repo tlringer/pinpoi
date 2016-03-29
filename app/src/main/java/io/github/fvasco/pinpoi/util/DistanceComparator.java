@@ -1,28 +1,30 @@
 package io.github.fvasco.pinpoi.util;
 
-import sparta.checkers.quals.Source;
 import android.location.Location;
+import sparta.checkers.quals.Source;
 
 import java.util.Comparator;
 import java.util.Objects;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 /**
  * Compare placemark using distance from a specific {@linkplain Coordinates}
  *
  * @author Francesco Vasco
  */
-public class DistanceComparator implements Comparator<Coordinates> {
+public class DistanceComparator implements Comparator</*@Source(DATABASE)*/ Coordinates> {
 
-    private final @Source({}) Coordinates center;
+    private final @Source(DATABASE) Coordinates center;
     private final @Source({}) float /*@Source({})*/ [] distanceResult = new /*@Source({})*/ float /*@Source({})*/ [1];
 
-    public DistanceComparator(final Coordinates center) {
+    public DistanceComparator(final @Source(DATABASE) Coordinates center) {
         Objects.requireNonNull(center);
         this.center = center;
     }
 
     @Override
-    public @Source({"INTENT"}) int compare(@Source({}) Coordinates lhs, @Source({}) Coordinates rhs) {
+    public int compare(@Source({}) Coordinates lhs, @Source({}) Coordinates rhs) {
         int res = Double.compare(calculateDistance(lhs), calculateDistance(rhs));
         if (res == 0) {
             // equals <==> same coordinates

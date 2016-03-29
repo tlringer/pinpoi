@@ -23,7 +23,7 @@ import static sparta.checkers.quals.FlowPermissionString.SHARED_PREFERENCES;
  * item details are presented side-by-side with a list of items
  * in a {@link PlacemarkListActivity}.
  */
-public class PlacemarkDetailActivity extends /*@Source({})*/ AppCompatActivity implements OnSwipeTouchListener.SwipeTouchListener {
+public class PlacemarkDetailActivity extends AppCompatActivity implements OnSwipeTouchListener.SwipeTouchListener {
 
     public static final @Source({}) String ARG_PLACEMARK_LIST_ID = "placemarkListId";
     private @Source({"BUNDLE","INTENT"}) long placemarkId;

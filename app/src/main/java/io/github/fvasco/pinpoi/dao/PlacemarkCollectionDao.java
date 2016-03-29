@@ -44,7 +44,7 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         return new PlacemarkCollectionDatabase(context);
     }
 
-    public @Source(DATABASE) PlacemarkCollection findPlacemarkCollectionById(final @Source({"BUNDLE","SHARED_PREFERENCES"}) long id) {
+    public @Source(DATABASE) PlacemarkCollection findPlacemarkCollectionById(final @Sink({DATABASE}) long id) {
         try (final Cursor cursor = database.query("PLACEMARK_COLLECTION",
                 null, "_ID=" + id, null, null, null, null)) {
             cursor.moveToFirst();
@@ -73,7 +73,7 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         }
     }
 
-    public @Source({}) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollectionInCategory(@Source({"DATABASE","SHARED_PREFERENCES"}) String selectedPlacemarkCategory) {
+    public @Source({}) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollectionInCategory(@Source({"DATABASE","SHARED_PREFERENCES", "USER_INPUT"}) String selectedPlacemarkCategory) {
         try (final Cursor cursor = database.query("PLACEMARK_COLLECTION",
                 null, "CATEGORY=?", new String[]{selectedPlacemarkCategory}, null, null, "NAME")) {
             final List</*@Source(DATABASE)*/ PlacemarkCollection> res = new ArrayList<>();
@@ -87,7 +87,7 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
 
     }
 
-    public @Source({}) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollection() {
+    public @Source(DATABASE) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollection() {
         try (final Cursor cursor = database.query("PLACEMARK_COLLECTION",
                 null, null, null, null, null, "CATEGORY,NAME")) {
             final List</*@Source(DATABASE)*/ PlacemarkCollection> res = new ArrayList<>();
@@ -109,16 +109,16 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         pc.setId(id);
     }
 
-    public void update(@Sink(DATABASE) @Source({}) PlacemarkCollection pc) {
+    public void update(@Sink(DATABASE) PlacemarkCollection pc) {
         database.update("PLACEMARK_COLLECTION", placemarkCollectionToContentValues(pc), "_ID=" + pc.getId(), null);
     }
 
-    public void delete(@Source({}) PlacemarkCollection pc) {
+    public void delete(@Sink(DATABASE) PlacemarkCollection pc) {
         database.delete("PLACEMARK_COLLECTION", "_ID=" + pc.getId(), null);
     }
 
-    private @Source({}) ContentValues placemarkCollectionToContentValues(final @Source({}) PlacemarkCollection pc) {
-        final ContentValues cv = new ContentValues();
+    private @Sink({DATABASE}) ContentValues placemarkCollectionToContentValues(final @Sink(DATABASE) PlacemarkCollection pc) {
+        final @Sink(DATABASE) ContentValues cv = (/*@Sink(DATABASE)*/ ContentValues) new ContentValues();
         cv.put("name", pc.getName());
         cv.put("description", pc.getDescription());
         cv.put("source", pc.getSource());
@@ -128,8 +128,8 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         return cv;
     }
 
-    private @Source({}) PlacemarkCollection cursorToPlacemarkCollection(@Source({}) Cursor cursor) {
-        final PlacemarkCollection pc = new PlacemarkCollection();
+    private @Source(DATABASE) PlacemarkCollection cursorToPlacemarkCollection(@Source(DATABASE) Cursor cursor) {
+        final @Source(DATABASE) PlacemarkCollection pc = new PlacemarkCollection();
         pc.setId(cursor.getLong(0));
         pc.setName(cursor.getString(1));
         pc.setDescription(cursor.getString(2));

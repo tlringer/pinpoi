@@ -24,4 +24,6 @@ hs_err_pid*
 /build
 /app/build
 /gradle*
-
+/app/res/
+/app/aapt/
+/app/R.txt
