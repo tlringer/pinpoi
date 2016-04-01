@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import io.github.fvasco.pinpoi.BuildConfig;
+import sparta.checkers.quals.PolyFlowReceiver;
 import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
@@ -32,7 +33,7 @@ public abstract class AbstractDao<T extends AbstractDao> implements AutoCloseabl
         reset();
     }
 
-    protected abstract SQLiteOpenHelper createSqLiteOpenHelper(@NonNull Context context);
+    protected abstract @Source({}) SQLiteOpenHelper createSqLiteOpenHelper(@NonNull Context context);
 
     public synchronized T open() throws SQLException {
         if (openCount < 0) {

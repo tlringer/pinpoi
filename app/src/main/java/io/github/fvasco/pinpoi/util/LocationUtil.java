@@ -6,13 +6,12 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
 import com.acg.lib.model.Location;
 import io.github.fvasco.pinpoi.BuildConfig;
-import io.github.fvasco.pinpoi.PlacemarkDetailActivity;
 import io.github.fvasco.pinpoi.model.PlacemarkBase;
+import sparta.checkers.quals.PolyFlowReceiver;
 import sparta.checkers.quals.Source;
 
 import java.io.*;
@@ -30,13 +29,15 @@ import static sparta.checkers.quals.FlowPermissionString.FILESYSTEM;
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public class LocationUtil {
 
     /**
      * Store resolved address
      */
-    private static final @Source(FILESYSTEM) LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String> ADDRESS_CACHE =
-            (/*@Source({})*/ LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String>) new /*@Source({})*/ LruCache</*@Source({})*/ Coordinates, /*@Source({})*/ String>(512);
+    private static final @Source(FILESYSTEM) LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String> ADDRESS_CACHE =
+            (/*@Source(FILESYSTEM)*/ LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String>)
+                    new /*@Source(FILESYSTEM)*/ LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String>(512);
     private static @Source({}) Geocoder geocoder;
     private static volatile @Source({}) File addressCacheFile;
 
@@ -165,7 +166,7 @@ public class LocationUtil {
             }
             context.startActivity(intent);
         } catch (Exception e) {
-            Log.e(PlacemarkDetailActivity.class.getSimpleName(), "Error on map click", e);
+            // Log.e(PlacemarkDetailActivity.class.getSimpleName(), "Error on map click", e); Don't allow logging from arbitrary sources
             Util.showToast(e.getLocalizedMessage(), Toast.LENGTH_LONG);
         }
     }
@@ -181,7 +182,7 @@ public class LocationUtil {
                     ADDRESS_CACHE.put(new Coordinates(latitude, longitude), address);
                 }
             } catch (IOException e) {
-                Log.w(LocationUtil.class.getSimpleName(), e);
+                // Log.w(LocationUtil.class.getSimpleName(), e); Don't allow logging from arbitrary sources
                 //noinspection ResultOfMethodCallIgnored
                 addressCacheFile.delete();
             }
@@ -200,7 +201,7 @@ public class LocationUtil {
                 outputStream.writeUTF(entry.getValue());
             }
         } catch (IOException e) {
-            Log.w(LocationUtil.class.getSimpleName(), e);
+            // Log.w(LocationUtil.class.getSimpleName(), e); Don't allow logging from arbitrary sources
             //noinspection ResultOfMethodCallIgnored
             addressCacheFile.delete();
         }

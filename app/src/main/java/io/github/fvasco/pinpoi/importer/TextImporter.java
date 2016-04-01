@@ -3,7 +3,6 @@ package io.github.fvasco.pinpoi.importer;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import io.github.fvasco.pinpoi.model.Placemark;
-import sparta.checkers.quals.PolyFlow;
 import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
@@ -18,6 +17,8 @@ import java.nio.charset.CodingErrorAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static sparta.checkers.quals.FlowPermissionString.*;
+
 /**
  * Import ASCII/UTF-8 file in format
  * <ul>
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public class TextImporter extends AbstractImporter {
 
-    private static final @Source({}) Pattern LINE_PATTERN = Pattern.compile("\\s*(\"?)([+-]?\\d+\\.\\d+)\\1[,;\\s]+(\"?)([+-]?\\d+\\.\\d+)\\3[,;\\s]+\"(.*)\"\\s*");
+    private static final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Pattern LINE_PATTERN = Pattern.compile("\\s*(\"?)([+-]?\\d+\\.\\d+)\\1[,;\\s]+(\"?)([+-]?\\d+\\.\\d+)\\3[,;\\s]+\"(.*)\"\\s*");
     private static final @Source({}) CharsetDecoder UTF_8_DECODER = Charset.forName("UTF-8").newDecoder();
 
     static {
@@ -37,12 +38,14 @@ public class TextImporter extends AbstractImporter {
         UTF_8_DECODER.onUnmappableCharacter(CodingErrorAction.REPORT);
     }
 
-    private final @Source({}) byte /*@Source({})*/ [] buffer = new /*@Source({})*/ byte /*@Source({})*/ [4 * 1024];
+    private final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ [] buffer =
+        new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ [4 * 1024];
 
     /**
      * Decode text, if UTF-8 fails then use ISO-8859-1
      */
-    public static String toString(@Source({}) byte /*@Source({})*/ [] byteBuffer, @Source({}) int start, @Source({}) int len) {
+    public static @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String toString(
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}))*/ [] byteBuffer, @Source({}) int start, @Source({}) int len) {
         try {
             return UTF_8_DECODER.decode(ByteBuffer.wrap(byteBuffer, start, len)).toString();
         } catch (CharacterCodingException e) {
@@ -54,8 +57,7 @@ public class TextImporter extends AbstractImporter {
         }
     }
 
-    @PolyFlow
-    private String readLine(final InputStream inputStream) throws IOException {
+    private @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String readLine(final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
         int pos = 0;
         int b;
         while ((b = inputStream.read()) >= 0) {
@@ -76,20 +78,20 @@ public class TextImporter extends AbstractImporter {
 
 
     @Override
-    protected void importImpl(@NonNull final @Sink({}) InputStream inputStream) throws IOException {
+    protected void importImpl(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
         String line;
         while ((line = readLine(inputStream)) != null) {
-            final Matcher matcher = LINE_PATTERN.matcher(line);
+            final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Matcher matcher = LINE_PATTERN.matcher(line);
             if (matcher.matches()) {
                 try {
-                    final Placemark placemark = new Placemark();
+                    final Placemark placemark = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark) new Placemark();
                     placemark.setLongitude(Float.parseFloat(matcher.group(2)));
                     placemark.setLatitude(Float.parseFloat(matcher.group(4)));
                     // remove double double-quotes
                     placemark.setName(matcher.group(5).replace("\"\"", "\""));
                     importPlacemark(placemark);
                 } catch (final NumberFormatException nfe) {
-                    Log.d(TextImporter.class.getSimpleName(), "Skip line: " + line, nfe);
+                    // Log.d(TextImporter.class.getSimpleName(), "Skip line: " + line, nfe); Don't allow logging from arbitrary sources
                 }
             } else {
                 Log.d(TextImporter.class.getSimpleName(), "Skip line: " + line);

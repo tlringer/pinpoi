@@ -11,7 +11,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static sparta.checkers.quals.FlowPermissionString.WRITE_LOGS;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Tomtom OV2 importer
@@ -27,13 +27,13 @@ length-14 bytes: ASCII string specifying the name of the POI
 1 byte: null byte
 */
 public class Ov2Importer extends AbstractImporter {
-    private static @Sink(WRITE_LOGS) int readIntLE(final @Sink({}) InputStream is) throws IOException {
+    private static @Sink(WRITE_LOGS) int readIntLE(final @Sink(WRITE_LOGS) InputStream is) throws IOException {
         return is.read() | is.read() << 8 | is.read() << 16 | is.read() << 24;
     }
 
     @Override
-    protected void importImpl(@NonNull final @Sink({}) InputStream inputStream) throws IOException {
-        final @Sink({}) DataInputStream dataInputStream = new /*@Sink({})*/ DataInputStream(inputStream);
+    protected void importImpl(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
+        final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) DataInputStream dataInputStream = new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ DataInputStream(inputStream);
         @Source({})
         byte[] nameBuffer = new byte[64];
         for (int rectype = dataInputStream.read(); rectype >= 0; rectype = dataInputStream.read()) {
@@ -76,7 +76,7 @@ public class Ov2Importer extends AbstractImporter {
                         ++i;
                     }
                 }
-                final Placemark placemark = new Placemark();
+                final Placemark placemark = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark) new Placemark();
                 placemark.setName(TextImporter.toString(nameBuffer, 0, nameLength));
                 placemark.setLongitude(longitudeInt / 100000F);
                 placemark.setLatitude(latitudeInt / 100000F);

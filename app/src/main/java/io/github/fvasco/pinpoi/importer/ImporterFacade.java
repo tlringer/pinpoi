@@ -15,7 +15,6 @@ import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.ProgressDialogInputStream;
 import io.github.fvasco.pinpoi.util.Util;
-import sparta.checkers.quals.PolyFlowReceiver;
 import sparta.checkers.quals.Sink;
 import sparta.checkers.quals.Source;
 
@@ -43,8 +42,7 @@ import static sparta.checkers.quals.FlowPermissionString.*;
  *
  * @author Francesco Vasco
  */
-@PolyFlowReceiver
-public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consumer</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark> {
+public /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ class ImporterFacade implements /*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Consumer</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark> {
 
     /**
      * Signpost for end of elaboration
@@ -52,9 +50,9 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
     private final @Source({}) Placemark STOP_PLACEMARK = new /*@Source({})*/ Placemark();
     private final @Source({}) PlacemarkDao placemarkDao;
     private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
-    private final @Sink({DATABASE, WRITE_LOGS}) BlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark> placemarkQueue =
-            (/*@Sink({DATABASE, WRITE_LOGS})*/ ArrayBlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark>)
-            new /*@Sink({DATABASE, WRITE_LOGS})*/ ArrayBlockingQueue</*@Sink({DATABASE, WRITE_LOGS})*/ Placemark>(256);
+    private final @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) BlockingQueue</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark> placemarkQueue =
+            (/*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ ArrayBlockingQueue</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark>)
+            new /*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ ArrayBlockingQueue</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark>(256);
     private @Source({}) ProgressDialog progressDialog;
     private @Sink(DISPLAY) String progressDialogMessageFormat;
 
@@ -68,7 +66,7 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
     }
 
     @Nullable
-    static AbstractImporter createImporter(@NonNull @Sink(WRITE_LOGS) final String resource) {
+    static @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) AbstractImporter createImporter(@NonNull @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) final String resource) {
         String path;
         try {
             if (Util.isUri(resource)) {
@@ -140,7 +138,7 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
      *
      * @return imported {@linkplain io.github.fvasco.pinpoi.model.Placemark}
      */
-    public int importPlacemarks(@NonNull final @Sink(DATABASE) PlacemarkCollection placemarkCollection) throws IOException {
+    public int importPlacemarks(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) PlacemarkCollection placemarkCollection) throws /*@Source({})*/ IOException {
         final String resource = placemarkCollection.getSource();
         Objects.requireNonNull(resource, "Null source");
         placemarkCollectionDao.open();
@@ -153,9 +151,9 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
             importer.setConsumer(this);
 
             // insert new placemark
-            final Future</*@Source({})*/ Void> importFuture = Util.EXECUTOR.submit(new Callable</*@Source({})*/ Void>() {
+            final Future</*@Source({})*/ Void> importFuture = Util.EXECUTOR.submit((/*@Source({})*/ Callable<Void>) new Callable</*@Source({})*/ Void>() {
                 @Override
-                public @Sink(ANY) @Source({}) Void call() throws Exception {
+                public Void call() throws Exception {
                     InputStream inputStream;
                     final int max;
                     if (resource.startsWith("/")) {
@@ -174,7 +172,7 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
                             progressDialog.setMax(max);
                             inputStream = new ProgressDialogInputStream(inputStream, progressDialog);
                         }
-                        Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
+                        Util.MAIN_LOOPER_HANDLER.post((/*@Sink({})*/ Runnable) new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.show();
@@ -205,7 +203,7 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
                         ++placemarkCount;
                         if (progressDialog != null && progressDialogMessageFormat != null) {
                             final @Sink(DISPLAY) String message = String.format(progressDialogMessageFormat, placemarkCount);
-                            Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
+                            Util.MAIN_LOOPER_HANDLER.post((/*@Sink({})*/ Runnable) new Runnable() {
                                 @Override
                                 public void run() {
                                     progressDialog.setMessage(message);
@@ -215,12 +213,12 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
                     } catch (IllegalArgumentException e) {
                         // discard (duplicate?) placemark
                         if (BuildConfig.DEBUG) {
-                            Log.i(ImporterFacade.class.getSimpleName(), "Placemark discarded " + placemark, e);
+                            // Log.i(ImporterFacade.class.getSimpleName(), "Placemark discarded " + placemark, e); Don't log arbitrary sources
                         }
                     }
                 }
                 if (progressDialog != null) {
-                    Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
+                    Util.MAIN_LOOPER_HANDLER.post((/*@Sink({})*/ Runnable) new Runnable() {
                         @Override
                         public void run() {
                             progressDialog.setIndeterminate(true);
@@ -238,10 +236,8 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
                     placemarkDaoDatabase.setTransactionSuccessful();
                 }
                 return placemarkCount;
-            } catch (InterruptedException | RuntimeException e) {
-                throw new IOException("Error importing placemark", e);
-            } catch (ExecutionException e) {
-                throw new IOException("Error importing placemark", e.getCause());
+            } catch (InterruptedException | ExecutionException | RuntimeException e) {
+                throw (/*@Source({})*/ IOException) new /*@Source({})*/ IOException("Error importing placemark", e.getCause());
             } finally {
                 importFuture.cancel(true);
                 placemarkDaoDatabase.endTransaction();
@@ -250,7 +246,7 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
         } finally {
             placemarkCollectionDao.close();
             if (progressDialog != null) {
-                Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
+                Util.MAIN_LOOPER_HANDLER.post((/*@Sink({})*/ Runnable) new Runnable() {
                     @Override
                     public void run() {
                         progressDialog.dismiss();
@@ -261,11 +257,11 @@ public class ImporterFacade implements /*@Sink({DATABASE, WRITE_LOGS})*/ Consume
     }
 
     @Override
-    public void accept(@Sink({DATABASE, WRITE_LOGS}) Placemark p) {
+    public void accept(@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) Placemark p) {
         try {
             placemarkQueue.put(p);
         } catch (InterruptedException e) {
-            Log.w(ImporterFacade.class.getSimpleName(), "Placemark discarded " + p, e);
+            // Log.w(ImporterFacade.class.getSimpleName(), "Placemark discarded " + p, e); Don't allow logging from arbitrary sources
             throw new RuntimeException(e);
         }
     }

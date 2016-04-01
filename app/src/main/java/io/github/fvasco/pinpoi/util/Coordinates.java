@@ -2,28 +2,29 @@ package io.github.fvasco.pinpoi.util;
 
 import android.location.Location;
 import io.github.fvasco.pinpoi.model.Placemark;
-import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.PolySinkR;
+import sparta.checkers.quals.PolySourceR;
 import sparta.checkers.quals.Source;
 
 import java.util.Objects;
-
-import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Simple coordinates
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public class Coordinates implements Cloneable {
-    public final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float latitude;
-    public final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float longitude;
+    public final @PolySinkR @PolySourceR float latitude;
+    public final @PolySinkR @PolySourceR float longitude;
 
-    public Coordinates(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float latitude, final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float longitude) {
+    public Coordinates(final float latitude, final float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public static @Source({}) Coordinates fromPlacemark(Placemark placemark) {
+    public static Coordinates fromPlacemark(Placemark placemark) {
         return new Coordinates(placemark.getLatitude(), placemark.getLongitude());
     }
 
@@ -41,19 +42,19 @@ public class Coordinates implements Cloneable {
         return Objects.hash(latitude, longitude);
     }
 
-    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public Coordinates withLatitude(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float newLatitude) {
+    public Coordinates withLatitude(final float newLatitude) {
         return new Coordinates(newLatitude, longitude);
     }
 
-    public Coordinates withLongitude(final @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) float newLongitude) {
+    public Coordinates withLongitude(final float newLongitude) {
         return new Coordinates(latitude, newLongitude);
     }
 
@@ -64,7 +65,7 @@ public class Coordinates implements Cloneable {
     }
 
     @Override
-    public @Sink({DATABASE, DISPLAY, INTERNET, WRITE_LOGS}) String toString() {
+    public String toString() {
         return Float.toString(latitude) + ',' + Float.toString(longitude);
     }
 }

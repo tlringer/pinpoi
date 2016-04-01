@@ -1,66 +1,66 @@
 package io.github.fvasco.pinpoi.model;
 
-import sparta.checkers.quals.Source;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.PolySinkR;
+import sparta.checkers.quals.PolySourceR;
 
 import java.io.Serializable;
-
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
 
 /**
  * A user annotation on {@linkplain Placemark}
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public class PlacemarkAnnotation implements Serializable {
-    private @Source(DATABASE) long id;
-    private @Source({DATABASE, USER_INPUT}) float latitude = Float.NaN;
-    private @Source({DATABASE, USER_INPUT}) float longitude = Float.NaN;
-    private @Source({DATABASE, USER_INPUT}) String note;
-    private @Source(DATABASE) boolean flagged;
+    @PolySourceR @PolySinkR private long id;
+    @PolySourceR @PolySinkR private float latitude = Float.NaN;
+    @PolySourceR @PolySinkR private float longitude = Float.NaN;
+    @PolySourceR @PolySinkR private String note;
+    @PolySourceR @PolySinkR private boolean flagged;
 
-    public @Source(DATABASE) boolean isFlagged() {
+    public boolean isFlagged() {
         return flagged;
     }
 
-    public void setFlagged(@Source(DATABASE) boolean flagged) {
+    public void setFlagged(boolean flagged) {
         this.flagged = flagged;
     }
 
-    public @Source(DATABASE) long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(@Source(DATABASE) long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public @Source({DATABASE, USER_INPUT}) float getLatitude() {
+    public  float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(@Source({DATABASE, USER_INPUT}) float latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public @Source({DATABASE, USER_INPUT}) float getLongitude() {
+    public  float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(@Source({DATABASE, USER_INPUT}) float longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
 
-    public @Source({DATABASE, USER_INPUT}) String getNote() {
+    public  String getNote() {
         return note;
     }
 
-    public void setNote(@Source({DATABASE, USER_INPUT}) String note) {
+    public void setNote(String note) {
         this.note = note;
     }
 
     @Override
-    public @Source({DATABASE, USER_INPUT}) String toString() {
+    public  String toString() {
         return note + '(' + latitude + ',' + longitude + ')';
     }
 

@@ -1,86 +1,86 @@
 package io.github.fvasco.pinpoi.model;
 
-import sparta.checkers.quals.Source;
-
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.PolySinkR;
+import sparta.checkers.quals.PolySourceR;
 
 /**
  * A collection, aggregator for {@linkplain Placemark}
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public class PlacemarkCollection {
 
-    private @Source({DATABASE}) long id;
-    private @Source({DATABASE, USER_INPUT}) String name;
-    private @Source({DATABASE, USER_INPUT}) String description;
-    private @Source({DATABASE, USER_INPUT}) String category;
-    private @Source({DATABASE}) String source;
-    private @Source({"READ_TIME", DATABASE}) long lastUpdate;
-    private @Source({DATABASE}) int poiCount;
+    @PolySourceR @PolySinkR private long id;
+    @PolySourceR @PolySinkR private String name;
+    @PolySourceR @PolySinkR private String description;
+    @PolySourceR @PolySinkR private String category;
+    @PolySourceR @PolySinkR private String source;
+    @PolySourceR @PolySinkR private long lastUpdate;
+    @PolySourceR @PolySinkR private int poiCount;
 
-    public @Source({DATABASE}) int getPoiCount() {
+    public int getPoiCount() {
         return poiCount;
     }
 
-    public void setPoiCount(@Source({DATABASE}) int poiCount) {
+    public void setPoiCount(int poiCount) {
         this.poiCount = poiCount;
     }
 
     /**
      * Last collection update, unix time
      */
-    public @Source({"READ_TIME", DATABASE}) long getLastUpdate() {
+    public long getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(@Source({"READ_TIME", DATABASE}) long lastUpdate) {
+    public void setLastUpdate(long lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
-    public @Source({DATABASE, USER_INPUT}) String getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(@Source({DATABASE, USER_INPUT}) String category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
-    public @Source({DATABASE}) long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(@Source({DATABASE}) long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public @Source({DATABASE, USER_INPUT}) String getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(@Source({DATABASE, USER_INPUT}) String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public @Source({DATABASE, USER_INPUT}) String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(@Source({DATABASE, USER_INPUT}) String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public @Source({DATABASE}) String getSource() {
+    public String getSource() {
         return source;
     }
 
-    public void setSource(@Source({DATABASE}) String source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
     @Override
-    public @Source({"DATABASE", "USER_INPUT"}) String toString() {
+    public String toString() {
         return name;
     }
 }

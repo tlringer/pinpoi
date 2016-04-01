@@ -6,9 +6,7 @@ import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.util.Util;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import sparta.checkers.quals.PolyFlowReceiver;
-import sparta.checkers.quals.Sink;
-import sparta.checkers.quals.Source;
+import sparta.checkers.quals.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,30 +14,32 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
+import static sparta.checkers.quals.FlowPermissionString.*;
+
 /**
  * Base XML impoter
  *
  * @author Francesco Vasco
  */
-@PolyFlowReceiver
 public abstract class AbstractXmlImporter extends AbstractImporter {
     protected static final @Source({}) String DOCUMENT_TAG = "<XML>";
-    protected final @Sink({}) XmlPullParser parser;
-    protected Placemark placemark;
-    protected String text;
-    protected String tag;
-    private @Source({}) Deque</*@Source({})*/ String> tagStack = new /*@Source({})*/ ArrayDeque<>();
+    protected final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) XmlPullParser parser;
+    protected @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Placemark placemark;
+    protected @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String text;
+    protected @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String tag;
+    private @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Deque</*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ String> tagStack =
+            new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ ArrayDeque</*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ String>();
 
     public AbstractXmlImporter() {
         try {
-            parser = (/*@Sink({})*/ XmlPullParser) Util.XML_PULL_PARSER_FACTORY.newPullParser();
+            parser = Util.XML_PULL_PARSER_FACTORY.newPullParser();
         } catch (XmlPullParserException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    protected void importImpl(@NonNull final InputStream is) throws IOException {
+    protected void importImpl(@NonNull @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) final InputStream is) throws /*@Source({})*/ IOException {
         try {
             parser.setInput(is, null);
             int eventType = parser.getEventType();
@@ -68,7 +68,7 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
             if (BuildConfig.DEBUG && placemark != null) throw new AssertionError(placemark);
             if (BuildConfig.DEBUG && text != null) throw new AssertionError(text);
         } catch (XmlPullParserException e) {
-            throw new IOException("Error reading XML file", e);
+            throw (/*@Source({})*/ IOException) new /*@Source({})*/ IOException("Error reading XML file", e.getCause());
         }
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
      */
     protected void newPlacemark() {
         if (BuildConfig.DEBUG && placemark != null) throw new AssertionError(placemark);
-        placemark = new Placemark();
+        placemark = new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark();
     }
 
     protected void importPlacemark() {

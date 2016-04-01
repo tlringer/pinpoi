@@ -52,9 +52,9 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         }
     }
 
-    public @Source(DATABASE) PlacemarkCollection findPlacemarkCollectionByName(@Source({"USER_INPUT"}) String name) {
+    public @Source(DATABASE) PlacemarkCollection findPlacemarkCollectionByName(@Sink(DATABASE) String name) {
         try (final Cursor cursor = database.query("PLACEMARK_COLLECTION",
-                null, "NAME=?", new String[]{name}, null, null, null)) {
+                null, "NAME=?", new String/*@Sink({})*/[]{name}, null, null, null)) {
             cursor.moveToFirst();
             return cursor.isAfterLast() ? null : cursorToPlacemarkCollection(cursor);
         }
@@ -73,9 +73,10 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
         }
     }
 
-    public @Source({}) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollectionInCategory(@Source({"DATABASE","SHARED_PREFERENCES", "USER_INPUT"}) String selectedPlacemarkCategory) {
+    public @Source({}) List</*@Source(DATABASE)*/ PlacemarkCollection> findAllPlacemarkCollectionInCategory(@Sink(DATABASE) String selectedPlacemarkCategory) {
+
         try (final Cursor cursor = database.query("PLACEMARK_COLLECTION",
-                null, "CATEGORY=?", new String[]{selectedPlacemarkCategory}, null, null, "NAME")) {
+                null, "CATEGORY=?", new String/*@Sink({})*/[]{selectedPlacemarkCategory}, null, null, "NAME")) {
             final List</*@Source(DATABASE)*/ PlacemarkCollection> res = new ArrayList<>();
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -129,7 +130,7 @@ public class PlacemarkCollectionDao extends AbstractDao<PlacemarkCollectionDao> 
     }
 
     private @Source(DATABASE) PlacemarkCollection cursorToPlacemarkCollection(@Source(DATABASE) Cursor cursor) {
-        final @Source(DATABASE) PlacemarkCollection pc = new PlacemarkCollection();
+        final @Source(DATABASE) PlacemarkCollection pc = (/*@Source(DATABASE)*/ PlacemarkCollection) new PlacemarkCollection();
         pc.setId(cursor.getLong(0));
         pc.setName(cursor.getString(1));
         pc.setDescription(cursor.getString(2));

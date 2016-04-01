@@ -33,10 +33,7 @@ import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Coordinates;
 import io.github.fvasco.pinpoi.util.LocationUtil;
 import io.github.fvasco.pinpoi.util.Util;
-import sparta.checkers.quals.Extra;
-import sparta.checkers.quals.IntentMap;
-import sparta.checkers.quals.Sink;
-import sparta.checkers.quals.Source;
+import sparta.checkers.quals.*;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -75,7 +72,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
      */
     private @Source({}) boolean mTwoPane;
     private @Source({}) PlacemarkDao placemarkDao;
-    private @Source(DATABASE) long /*@Source(DATABASE)*/ [] placemarkIdArray;
+    private @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) long /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ [] placemarkIdArray;
     private @Source({}) PlacemarkDetailFragment fragment;
     private @Source({}) Coordinates searchCoordinate;
     private @Source({"INTENT"}) int range;
@@ -174,14 +171,16 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         recyclerView.setVisibility(View.VISIBLE);
         final RecyclerView.Adapter oldAdapter = recyclerView.getAdapter();
         if (oldAdapter == null || oldAdapter.getItemCount() == 0) {
-            final @Source(DATABASE) SimpleItemRecyclerViewAdapter adapter = (/*@Source(DATABASE)*/ SimpleItemRecyclerViewAdapter) new SimpleItemRecyclerViewAdapter();
+            final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) SimpleItemRecyclerViewAdapter adapter =
+                    (/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ SimpleItemRecyclerViewAdapter) new SimpleItemRecyclerViewAdapter();
             recyclerView.setAdapter(adapter);
-            searchPoi(new Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>>() {
+            searchPoi(new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/
+                              Consumer</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult>>() {
                 @Override
-                public void accept(@Source(DATABASE) Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarks) {
+                public void accept(@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult> placemarks) {
                     // create array in background thread
-                    final @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarksArray =
-                            placemarks.toArray(new PlacemarkSearchResult[placemarks.size()]);
+                    final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) PlacemarkSearchResult /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ [] placemarksArray =
+                        placemarks.toArray(new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ [placemarks.size()]);
                     Util.MAIN_LOOPER_HANDLER.post(new Runnable() {
                         @Override
                         public void run() {
@@ -193,7 +192,8 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         }
     }
 
-    private void searchPoi(final @NonNull @Source(DATABASE) Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>> placemarksConsumer) {
+    private void searchPoi(final @NonNull @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})
+                           Consumer</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult>> placemarksConsumer) {
         // load parameters
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
@@ -251,10 +251,10 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            final @Source(DATABASE) Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarks =
+                            final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult> placemarks =
                                     placemarkDao.findAllPlacemarkNear(searchCoordinate,
                                             range, nameFilterFinal, favourite, collectionIdList);
-                            Log.d(PlacemarkListActivity.class.getSimpleName(), "searchPoi progress placemarks.size()=" + placemarks.size());
+                            // Log.d(PlacemarkListActivity.class.getSimpleName(), "searchPoi progress placemarks.size()=" + placemarks.size()); Don't allow logging from arbitrary sources
                             Util.showToast(getString(R.string.n_placemarks_found, placemarks.size()), Toast.LENGTH_SHORT);
                             placemarksConsumer.accept(placemarks);
 
@@ -266,7 +266,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                                 ++i;
                             }
                         } catch (Exception e) {
-                            Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "searchPoi progress", e);
+                            // Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "searchPoi progress", e); Don't allow logging from arbitrary sources
                             Util.showToast(getString(R.string.error_search, e.getLocalizedMessage()), Toast.LENGTH_LONG);
                         }
                     }
@@ -328,9 +328,10 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
         webSettings.setSupportMultipleWindows(false);
 
-        searchPoi(new Consumer</*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult>>() {
+        searchPoi(new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/
+                          Consumer</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult>>() {
             @Override
-            public void accept(/*@Source(DATABASE)*/ Collection</*@Source(DATABASE)*/ PlacemarkSearchResult> placemarksSearchResult) {
+            public void accept(/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Collection</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult> placemarksSearchResult) {
                 // this list helps to divide placemarks in category
                 final @Sink({INTERNET, WRITE_LOGS}) StringBuilder html = (/*@Sink({INTERNET, WRITE_LOGS})*/ StringBuilder) new StringBuilder(1024 + placemarksSearchResult.size() * 256);
                 final String leafletVersion = "0.7.7";
@@ -400,7 +401,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                         try {
                             mapWebView.loadData(htmlText, "text/html; charset=UTF-8", null);
                         } catch (final Throwable e) {
-                            Log.e(PlacemarkListActivity.class.getSimpleName(), "mapWebView.loadData", e);
+                            // Log.e(PlacemarkListActivity.class.getSimpleName(), "mapWebView.loadData", e); Don't allow logging from arbitrary sources
                             Util.showToast(e);
                         }
                     }
@@ -415,14 +416,14 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
         private final @Source({}) DecimalFormat decimalFormat = new /*@Source({})*/ DecimalFormat();
         private final @Sink(DISPLAY) StringBuilder stringBuilder = (/*@Sink(DISPLAY)*/ StringBuilder) new /*@Sink(DISPLAY)*/ StringBuilder();
         private final @Source({}) float /*@Source({})*/ [] floatArray = new /*@Source({})*/ float /*@Source({})*/ [2];
-        private @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarks;
+        private @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) PlacemarkSearchResult /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ [] placemarks;
 
         public SimpleItemRecyclerViewAdapter() {
             decimalFormat.setMinimumFractionDigits(1);
             decimalFormat.setMaximumFractionDigits(1);
         }
 
-        public void setPlacemarks(@NonNull final @Source(DATABASE) PlacemarkSearchResult /*@Source(DATABASE)*/ [] placemarks) {
+        public void setPlacemarks(@NonNull final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) PlacemarkSearchResult /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ [] placemarks) {
             Objects.requireNonNull(placemarks);
             this.placemarks = placemarks;
             notifyDataSetChanged();
@@ -487,7 +488,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
             return placemarks == null ? 0 : placemarks.length;
         }
 
-        public class ViewHolder extends RecyclerView./*@Source(DATABASE)*/ ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             public final @Source({}) TextView view;
             public @Source(DATABASE) PlacemarkSearchResult placemark;
 

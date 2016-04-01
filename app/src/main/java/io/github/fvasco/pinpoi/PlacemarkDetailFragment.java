@@ -56,7 +56,7 @@ public class PlacemarkDetailFragment extends Fragment {
     };
     private @Source({}) PlacemarkDao placemarkDao;
     private @Source({}) PlacemarkCollectionDao placemarkCollectionDao;
-    private @Source(DATABASE) PlacemarkAnnotation placemarkAnnotation;
+    private @Source({DATABASE, USER_INPUT}) PlacemarkAnnotation placemarkAnnotation;
     private @Source(SHARED_PREFERENCES) SharedPreferences preferences;
     private @Source({}) TextView placemarkDetail;
     private @Source({}) TextView coordinateText;
@@ -124,7 +124,7 @@ public class PlacemarkDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public @Source(DATABASE) PlacemarkAnnotation getPlacemarkAnnotation() {
+    public @Source({DATABASE, USER_INPUT}) PlacemarkAnnotation getPlacemarkAnnotation() {
         return placemarkAnnotation;
     }
 

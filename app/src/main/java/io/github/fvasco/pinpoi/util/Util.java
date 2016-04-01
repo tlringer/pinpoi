@@ -37,7 +37,7 @@ public final class Util {
     public static final ExecutorService EXECUTOR =
             Executors.unconfigurableExecutorService(Executors.newScheduledThreadPool(3));
     public static final XmlPullParserFactory XML_PULL_PARSER_FACTORY;
-    private static final @Source({}) Pattern HTML_PATTERN = (/*@Source({})*/ Pattern) Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
+    private static final @Source(DATABASE) Pattern HTML_PATTERN = (/*@Source(DATABASE)*/ Pattern) Pattern.compile("<(\\w+)(\\s[^<>]*)?>.*<\\/\\1>|<\\w+(\\s[^<>]*)?/>", Pattern.DOTALL);
     private static @Sink({}) Context APPLICATION_CONTEXT;
 
     static {
@@ -46,8 +46,8 @@ public final class Util {
             XML_PULL_PARSER_FACTORY = XmlPullParserFactory.newInstance();
             XML_PULL_PARSER_FACTORY.setNamespaceAware(true);
             XML_PULL_PARSER_FACTORY.setValidating(false);
-        } catch (@Source({}) XmlPullParserException e) {
-            throw new /*@Source({})*/ RuntimeException(e);
+        } catch (@Source({}) @Sink({}) XmlPullParserException e) {
+            throw new /*@Source({})*/ RuntimeException(e.getCause());
         }
     }
 
@@ -104,8 +104,7 @@ public final class Util {
     /**
      * Try to detect HTML text
      */
-    @PolyFlow
-    public static boolean isHtml(final CharSequence text) {
+    public static @Source(DATABASE) boolean isHtml(final @Source(DATABASE) CharSequence text) {
         return text != null && HTML_PATTERN.matcher(text).find();
     }
 
@@ -160,8 +159,7 @@ public final class Util {
 
     public static void openFileChooser(final File dir, final Consumer<File> fileConsumer, final Context context) {
         if (dir.isDirectory() && dir.canRead()) {
-            @Source({})
-            File[] files = dir.listFiles(new FileFilter() {
+            @Source(FILESYSTEM) File[] files = dir.listFiles(new /*@Source(FILESYSTEM)*/ FileFilter() {
                 @Override
                 public @Source(FILESYSTEM) boolean accept(File pathname) {
                     return pathname.canRead() && !pathname.getName().startsWith(".");

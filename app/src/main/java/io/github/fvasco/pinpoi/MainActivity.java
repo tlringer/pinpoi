@@ -1,7 +1,5 @@
 package io.github.fvasco.pinpoi;
 
-import sparta.checkers.quals.Sink;
-import sparta.checkers.quals.Source;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -35,6 +33,8 @@ import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
 import io.github.fvasco.pinpoi.util.*;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 
 public class MainActivity extends /*@Source({})*/ AppCompatActivity
@@ -376,7 +378,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                         }).show();
             }
         } catch (IOException e) {
-            Log.e(MainActivity.class.getSimpleName(), "searchAddress", e);
+            // Log.e(MainActivity.class.getSimpleName(), "searchAddress", e); Don't allow logging from arbitrary sources
             Util.showToast(getString(R.string.error_network), Toast.LENGTH_LONG);
         }
     }
@@ -392,7 +394,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                             : placemarkCollectionDao.findAllPlacemarkCollectionInCategory(selectedPlacemarkCategory);
                     collectionsIds = new long[collections.size()];
                     int i = 0;
-                    for (final PlacemarkCollection placemarkCollection : collections) {
+                    for (final @Source(DATABASE) PlacemarkCollection placemarkCollection : collections) {
                         collectionsIds[i] = placemarkCollection.getId();
                         ++i;
                     }
@@ -415,7 +417,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                 context.startActivity(intent);
             }
         } catch (Exception e) {
-            Log.e(MainActivity.class.getSimpleName(), "onSearchPoi", e);
+            // Log.e(MainActivity.class.getSimpleName(), "onSearchPoi", e); Don't allow logging from arbitrary sources
             Toast.makeText(MainActivity.this, R.string.validation_error, Toast.LENGTH_SHORT).show();
         }
     }
@@ -452,7 +454,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                                 final BackupManager backupManager = new BackupManager(PlacemarkCollectionDao.getInstance(), PlacemarkDao.getInstance());
                                 backupManager.create(BackupManager.DEFAULT_BACKUP_FILE);
                             } catch (Exception e) {
-                                Log.w(MainActivity.class.getSimpleName(), "create backup failed", e);
+                                // Log.w(MainActivity.class.getSimpleName(), "create backup failed", e); Don't allow logging from arbitrary sources
                                 Util.showToast(e);
                             }
                         }
@@ -506,7 +508,7 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
                                 }
                             });
                         } catch (Exception e) {
-                            Log.w(MainActivity.class.getSimpleName(), "restore backup failed", e);
+                            // Log.w(MainActivity.class.getSimpleName(), "restore backup failed", e); Don't allow logging from arbitrary sources
                             Util.showToast(e);
                         }
                     }

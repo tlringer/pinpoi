@@ -40,7 +40,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
     private static final @Source({}) int FILE_SELECT_CODE = 1;
     private final @Source({}) PlacemarkCollectionDao placemarkCollectionDao = PlacemarkCollectionDao.getInstance();
 
-    private @Source(DATABASE) PlacemarkCollection placemarkCollection;
+    private @Source({DATABASE, USER_INPUT}) PlacemarkCollection placemarkCollection;
     private @Source({}) EditText descriptionText;
     private @Source({}) TextView sourceText;
     private @Source({}) AutoCompleteTextView categoryText;
@@ -147,8 +147,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                 placemarkCollectionDao.update(placemarkCollection);
             }
         } catch (Exception e) {
-            e = (/*@Source({})*/ Exception) e;
-            Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "savePlacemarkCollection", e);
+            // Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "savePlacemarkCollection", e); Don't allow logging from arbitrary sources
             Toast.makeText(getActivity(), R.string.validation_error, Toast.LENGTH_SHORT).show();
         }
     }
@@ -193,8 +192,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                         Util.showToast(getString(R.string.update_collection_success, placemarkCollection.getName(), count), Toast.LENGTH_LONG);
                     }
                 } catch (Exception e) {
-                    e = (/*@Source({})*/ Exception) e;
-                    Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "updatePlacemarkCollection", e);
+                    // Log.e(PlacemarkCollectionDetailFragment.class.getSimpleName(), "updatePlacemarkCollection", e); Don't allow logging from arbitrary sources
                     Util.showToast(getString(R.string.error_update, placemarkCollection.getName(), e.getLocalizedMessage()), Toast.LENGTH_LONG);
                 } finally {
                     // update placemark collection info
@@ -240,7 +238,7 @@ public class PlacemarkCollectionDetailFragment extends Fragment {
                 }, view.getContext());
     }
 
-    public @Source(DATABASE) PlacemarkCollection getPlacemarkCollection() {
+    public @Source({DATABASE, USER_INPUT}) PlacemarkCollection getPlacemarkCollection() {
         return placemarkCollection;
     }
 }

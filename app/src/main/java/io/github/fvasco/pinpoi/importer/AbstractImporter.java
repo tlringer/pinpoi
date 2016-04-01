@@ -6,39 +6,37 @@ import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.util.Consumer;
 import io.github.fvasco.pinpoi.util.Util;
-import sparta.checkers.quals.PolyFlowReceiver;
 import sparta.checkers.quals.Sink;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static sparta.checkers.quals.FlowPermissionString.WRITE_LOGS;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * Abstract base importer.
  *
  * @author Francesco Vasco
  */
-@PolyFlowReceiver
 public abstract class AbstractImporter {
 
-    private Consumer<Placemark> consumer;
-    private long collectionId;
+    private @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Consumer</*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark> consumer;
+    private @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) long collectionId;
 
-    public long getCollectionId() {
+    public @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) long getCollectionId() {
         return collectionId;
     }
 
-    public void setCollectionId( long collectionId) {
+    public void setCollectionId(@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) long collectionId) {
         this.collectionId = collectionId;
     }
 
-    public Consumer<Placemark> getConsumer() {
+    public @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Consumer</*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark> getConsumer() {
         return consumer;
     }
 
-    public void setConsumer(final Consumer<Placemark> consumer) {
+    public void setConsumer(@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) final Consumer</*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark> consumer) {
         this.consumer = consumer;
     }
 
@@ -48,7 +46,7 @@ public abstract class AbstractImporter {
      * @param inputStream data source
      * @throws IOException error during reading
      */
-    public void importPlacemarks(@NonNull final InputStream inputStream) throws IOException {
+    public void importPlacemarks(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
         Objects.requireNonNull(inputStream);
         if (consumer == null) {
             throw new IllegalStateException("Consumer not defined");
@@ -60,7 +58,7 @@ public abstract class AbstractImporter {
         importImpl(inputStream);
     }
 
-    protected void importPlacemark(@NonNull @Sink(WRITE_LOGS) final Placemark placemark) {
+    protected void importPlacemark(@NonNull @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) final Placemark placemark) {
         final float latitude = placemark.getLatitude();
         final float longitude = placemark.getLongitude();
         if (!Float.isNaN(latitude) && latitude >= -90F && latitude <= 90F
@@ -94,5 +92,5 @@ public abstract class AbstractImporter {
      * @param inputStream data source
      * @throws IOException error during reading
      */
-    protected abstract void importImpl(@NonNull InputStream inputStream) throws IOException;
+    protected abstract void importImpl(@NonNull @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException;
 }

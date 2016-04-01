@@ -31,9 +31,7 @@ import sparta.checkers.quals.Source;
 
 import java.util.List;
 
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
-import static sparta.checkers.quals.FlowPermissionString.USER_INPUT;
+import static sparta.checkers.quals.FlowPermissionString.*;
 
 /**
  * An activity representing a list of Placemark Collections. This activity
@@ -164,7 +162,7 @@ public class PlacemarkCollectionListActivity extends /*@Source({})*/ AppCompatAc
                     public void onClick(DialogInterface dialog, int whichButton) {
                         try {
                             String placemarkCollectionName = input.getText().toString();
-                            final PlacemarkCollection placemarkCollection = new PlacemarkCollection();
+                            final @Sink({DATABASE, INTENT}) PlacemarkCollection placemarkCollection = (/*@Sink({DATABASE, INTENT})*/ PlacemarkCollection) new PlacemarkCollection();
                             placemarkCollection.setName(placemarkCollectionName);
                             placemarkCollection.setSource(sourceUri == null ? "" : sourceUri.toString());
                             placemarkCollection.setCategory(sourceUri == null ? "" : sourceUri.getHost());

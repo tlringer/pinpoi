@@ -1,19 +1,18 @@
 package io.github.fvasco.pinpoi.model;
 
-import sparta.checkers.quals.Source;
-
-import static sparta.checkers.quals.FlowPermissionString.*;
+import sparta.checkers.quals.PolyFlowReceiver;
 
 /**
  * Placemark base information
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public interface PlacemarkBase {
 
-    @Source({DATABASE, INTENT, SHARED_PREFERENCES}) String getName();
+    String getName();
 
-    @Source({DATABASE, USER_INPUT}) float getLatitude();
+    float getLatitude();
 
-    @Source({DATABASE, USER_INPUT}) float getLongitude();
+    float getLongitude();
 }

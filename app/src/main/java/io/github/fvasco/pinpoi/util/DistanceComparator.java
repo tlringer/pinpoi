@@ -1,30 +1,31 @@
 package io.github.fvasco.pinpoi.util;
 
 import android.location.Location;
-import sparta.checkers.quals.Source;
+import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.PolySinkR;
+import sparta.checkers.quals.PolySourceR;
 
 import java.util.Comparator;
 import java.util.Objects;
-
-import static sparta.checkers.quals.FlowPermissionString.DATABASE;
 
 /**
  * Compare placemark using distance from a specific {@linkplain Coordinates}
  *
  * @author Francesco Vasco
  */
-public class DistanceComparator implements Comparator</*@Source(DATABASE)*/ Coordinates> {
+@PolyFlowReceiver
+public class DistanceComparator implements Comparator</*@PolySourceR @PolySinkR*/ Coordinates> {
 
-    private final @Source(DATABASE) Coordinates center;
-    private final @Source({}) float /*@Source({})*/ [] distanceResult = new /*@Source({})*/ float /*@Source({})*/ [1];
+    private final @PolySourceR @PolySinkR  Coordinates center;
+    private final @PolySourceR @PolySinkR  float /*@PolySourceR @PolySinkR*/ [] distanceResult = new /*@PolySourceR @PolySinkR*/ float /*@PolySourceR @PolySinkR*/ [1];
 
-    public DistanceComparator(final @Source(DATABASE) Coordinates center) {
+    public DistanceComparator(Coordinates center) {
         Objects.requireNonNull(center);
         this.center = center;
     }
 
     @Override
-    public int compare(@Source({}) Coordinates lhs, @Source({}) Coordinates rhs) {
+    public int compare(Coordinates lhs, Coordinates rhs) {
         int res = Double.compare(calculateDistance(lhs), calculateDistance(rhs));
         if (res == 0) {
             // equals <==> same coordinates
