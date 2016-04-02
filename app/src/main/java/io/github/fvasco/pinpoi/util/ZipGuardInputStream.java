@@ -1,5 +1,7 @@
 package io.github.fvasco.pinpoi.util;
 
+import sparta.checkers.quals.PolyFlowReceiver;
+
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
@@ -9,6 +11,7 @@ import java.util.zip.ZipInputStream;
  *
  * @author Francesco Vasco
  */
+@PolyFlowReceiver
 public class ZipGuardInputStream extends FilterInputStream {
 
     public ZipGuardInputStream(ZipInputStream in) {

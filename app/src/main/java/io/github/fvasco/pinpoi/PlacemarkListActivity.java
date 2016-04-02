@@ -490,7 +490,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final @Source({}) TextView view;
-            public @Source(DATABASE) PlacemarkSearchResult placemark;
+            public @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) PlacemarkSearchResult placemark;
 
             public ViewHolder(@Source({}) View view) {
                 super(view);
@@ -498,7 +498,7 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
             }
 
             @Override
-            public @Source(DATABASE) String toString() {
+            public @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) String toString() {
                 return super.toString() + " '" + placemark + "'";
             }
         }

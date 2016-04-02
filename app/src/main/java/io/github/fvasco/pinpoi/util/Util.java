@@ -46,7 +46,7 @@ public final class Util {
             XML_PULL_PARSER_FACTORY = XmlPullParserFactory.newInstance();
             XML_PULL_PARSER_FACTORY.setNamespaceAware(true);
             XML_PULL_PARSER_FACTORY.setValidating(false);
-        } catch (@Source({}) @Sink({}) XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             throw new /*@Source({})*/ RuntimeException(e.getCause());
         }
     }

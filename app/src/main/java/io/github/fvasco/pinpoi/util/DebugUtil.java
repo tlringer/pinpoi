@@ -3,7 +3,6 @@ package io.github.fvasco.pinpoi.util;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.dao.PlacemarkCollectionDao;
 import io.github.fvasco.pinpoi.dao.PlacemarkDao;
@@ -37,7 +36,7 @@ public final class DebugUtil {
                 }
 
                 // recreate test database
-                final PlacemarkCollection placemarkCollection = new PlacemarkCollection();
+                final PlacemarkCollection placemarkCollection = (/*@Sink(DATABASE)*/ PlacemarkCollection) new PlacemarkCollection();
                 for (int pci = 15; pci >= 0; --pci) {
                     placemarkCollection.setId(0);
                     placemarkCollection.setName("Placemark Collection '" + pci + '\'');

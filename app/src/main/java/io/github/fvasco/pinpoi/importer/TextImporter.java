@@ -79,7 +79,7 @@ public class TextImporter extends AbstractImporter {
 
     @Override
     protected void importImpl(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
-        String line;
+        @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String line;
         while ((line = readLine(inputStream)) != null) {
             final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Matcher matcher = LINE_PATTERN.matcher(line);
             if (matcher.matches()) {

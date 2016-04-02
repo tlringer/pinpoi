@@ -27,13 +27,14 @@ length-14 bytes: ASCII string specifying the name of the POI
 1 byte: null byte
 */
 public class Ov2Importer extends AbstractImporter {
-    private static @Sink(WRITE_LOGS) int readIntLE(final @Sink(WRITE_LOGS) InputStream is) throws IOException {
+    private static @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) int readIntLE(final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream is) throws IOException {
         return is.read() | is.read() << 8 | is.read() << 16 | is.read() << 24;
     }
 
     @Override
     protected void importImpl(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
-        final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) DataInputStream dataInputStream = new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ DataInputStream(inputStream);
+        final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) DataInputStream dataInputStream =
+                (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ DataInputStream) new /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ DataInputStream(inputStream);
         @Source({})
         byte[] nameBuffer = new byte[64];
         for (int rectype = dataInputStream.read(); rectype >= 0; rectype = dataInputStream.read()) {
@@ -41,7 +42,7 @@ public class Ov2Importer extends AbstractImporter {
             if (rectype == 2 || rectype == 3) {
                 final int total = readIntLE(dataInputStream);
                 Log.i(Ov2Importer.class.getSimpleName(), "Process record type " + rectype + " total " + total);
-                int nameLength = total - 14;
+                @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) int nameLength = total - 14;
 
                 // read lon, lat
                 // coordinate format: int*100000

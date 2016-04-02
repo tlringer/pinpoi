@@ -66,7 +66,7 @@ public class LocationUtil {
             final Coordinates coordinates,
             final Consumer<String> addressConsumer) {
         Objects.requireNonNull(coordinates);
-        return Util.EXECUTOR.submit(new Callable</*@Source({})*/ String>() {
+        return Util.EXECUTOR.submit((/*@Source({})*/ Callable</*@Source({})*/ String>) new /*@Source({})*/ Callable</*@Source({})*/ String>() {
             @Override
             public @Source({}) String call() throws Exception {
                 init();
@@ -194,7 +194,7 @@ public class LocationUtil {
         try (final DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(addressCacheFile))) {
             // first item is entry count
             outputStream.writeShort(ADDRESS_CACHE.size());
-            for (final Map.Entry</*@Source({})*/ Coordinates, /*@Source({})*/ String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
+            for (final Map.Entry</*@Source("FILESYSTEM")*/ Coordinates, /*@Source("FILESYSTEM")*/ String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
                 final Coordinates coordinates = entry.getKey();
                 outputStream.writeFloat(coordinates.getLatitude());
                 outputStream.writeFloat(coordinates.getLongitude());

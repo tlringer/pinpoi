@@ -90,7 +90,7 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
      */
     protected @Source({}) boolean checkCurrentPath(final @Source({}) String... tags) {
         if (tags.length != tagStack.size() - 1) return false;
-        final Iterator</*@Source({})*/ String> iterator = tagStack.descendingIterator();
+        final Iterator</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ String> iterator = tagStack.descendingIterator();
         for (int i = tags.length - 1; i >= 0; --i) {
             if (!tags[i].equals(iterator.next())) return false;
         }
