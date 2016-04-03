@@ -138,7 +138,7 @@ public /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ class ImporterFac
      *
      * @return imported {@linkplain io.github.fvasco.pinpoi.model.Placemark}
      */
-    public int importPlacemarks(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) PlacemarkCollection placemarkCollection) throws /*@Source({})*/ IOException {
+    public int importPlacemarks(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) PlacemarkCollection placemarkCollection) throws IOException {
         final String resource = placemarkCollection.getSource();
         Objects.requireNonNull(resource, "Null source");
         placemarkCollectionDao.open();
@@ -236,8 +236,8 @@ public /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ class ImporterFac
                     placemarkDaoDatabase.setTransactionSuccessful();
                 }
                 return placemarkCount;
-            } catch (InterruptedException | ExecutionException | RuntimeException e) {
-                throw (/*@Source({})*/ IOException) new /*@Source({})*/ IOException("Error importing placemark", e.getCause());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException("Error importing placemark", e);
             } finally {
                 importFuture.cancel(true);
                 placemarkDaoDatabase.endTransaction();
