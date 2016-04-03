@@ -38,7 +38,6 @@ public class BackupManagerTest extends @Source({}) AndroidTestCase {
         }
 
         // init database
-        DebugUtil.setUpDebugDatabase(testContext);
         backupManager = new BackupManager(placemarkCollectionDao, placemarkDao);
     }
 

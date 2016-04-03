@@ -194,7 +194,7 @@ public class LocationUtil {
         try (final DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(addressCacheFile))) {
             // first item is entry count
             outputStream.writeShort(ADDRESS_CACHE.size());
-            for (final Map.Entry</*@Source("FILESYSTEM")*/ Coordinates, /*@Source("FILESYSTEM")*/ String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
+            for (final Map.Entry<Coordinates, String> entry : ADDRESS_CACHE.snapshot().entrySet()) {
                 final Coordinates coordinates = entry.getKey();
                 outputStream.writeFloat(coordinates.getLatitude());
                 outputStream.writeFloat(coordinates.getLongitude());

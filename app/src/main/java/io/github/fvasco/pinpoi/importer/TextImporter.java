@@ -48,7 +48,7 @@ public class TextImporter extends AbstractImporter {
             @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}))*/ [] byteBuffer,
             @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) int start, @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) int len) {
         try {
-            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) ByteBuffer wrapped = ByteBuffer.wrap(byteBuffer, start, len);
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) ByteBuffer wrapped = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ ByteBuffer) ByteBuffer.wrap(byteBuffer, start, len);
             @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) CharBuffer decoded = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ CharBuffer) UTF_8_DECODER.decode(wrapped);
             return decoded.toString();
         } catch (CharacterCodingException e) {

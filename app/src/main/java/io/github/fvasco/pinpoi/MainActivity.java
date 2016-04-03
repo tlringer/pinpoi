@@ -208,9 +208,6 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
             case R.id.restore_backup:
                 showRestoreBackupConfirm();
                 return true;
-            case R.id.debug_create_db:
-                DebugUtil.setUpDebugDatabase(this);
-                return true;
             case R.id.action_web_site:
                 // branch gh-pages
                 Intent i = new Intent(Intent.ACTION_VIEW);
