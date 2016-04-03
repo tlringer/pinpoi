@@ -4,12 +4,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import io.github.fvasco.pinpoi.model.Placemark;
 import sparta.checkers.quals.Sink;
-import sparta.checkers.quals.Source;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -31,7 +31,7 @@ import static sparta.checkers.quals.FlowPermissionString.*;
 public class TextImporter extends AbstractImporter {
 
     private static final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Pattern LINE_PATTERN = Pattern.compile("\\s*(\"?)([+-]?\\d+\\.\\d+)\\1[,;\\s]+(\"?)([+-]?\\d+\\.\\d+)\\3[,;\\s]+\"(.*)\"\\s*");
-    private static final @Source({}) CharsetDecoder UTF_8_DECODER = Charset.forName("UTF-8").newDecoder();
+    private static final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) CharsetDecoder UTF_8_DECODER = Charset.forName("UTF-8").newDecoder();
 
     static {
         // fails on not mappable characters
@@ -45,9 +45,12 @@ public class TextImporter extends AbstractImporter {
      * Decode text, if UTF-8 fails then use ISO-8859-1
      */
     public static @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String toString(
-            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}))*/ [] byteBuffer, @Source({}) int start, @Source({}) int len) {
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) byte /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}))*/ [] byteBuffer,
+            @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) int start, @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) int len) {
         try {
-            return UTF_8_DECODER.decode(ByteBuffer.wrap(byteBuffer, start, len)).toString();
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) ByteBuffer wrapped = ByteBuffer.wrap(byteBuffer, start, len);
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) CharBuffer decoded = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ CharBuffer) UTF_8_DECODER.decode(wrapped);
+            return decoded.toString();
         } catch (CharacterCodingException e) {
             try {
                 return new String(byteBuffer, start, len, "ISO-8859-1");
@@ -81,7 +84,7 @@ public class TextImporter extends AbstractImporter {
     protected void importImpl(@NonNull final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) InputStream inputStream) throws IOException {
         @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String line;
         while ((line = readLine(inputStream)) != null) {
-            final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Matcher matcher = LINE_PATTERN.matcher(line);
+            final @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) Matcher matcher = ((/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Pattern) LINE_PATTERN).matcher(line);
             if (matcher.matches()) {
                 try {
                     final Placemark placemark = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ Placemark) new Placemark();

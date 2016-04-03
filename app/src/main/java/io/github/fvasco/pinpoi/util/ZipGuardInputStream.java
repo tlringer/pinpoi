@@ -20,6 +20,6 @@ public class ZipGuardInputStream extends FilterInputStream {
 
     @Override
     public void close() throws IOException {
-        ((ZipInputStream) this.in).closeEntry();
+        ((/*@PolyFlowReceiver*/  ZipInputStream) this.in).closeEntry();
     }
 }

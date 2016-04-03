@@ -9,6 +9,7 @@ import io.github.fvasco.pinpoi.dao.PlacemarkDao;
 import io.github.fvasco.pinpoi.model.Placemark;
 import io.github.fvasco.pinpoi.model.PlacemarkAnnotation;
 import io.github.fvasco.pinpoi.model.PlacemarkCollection;
+import sparta.checkers.quals.Sink;
 
 /**
  * Debug utilities
@@ -36,7 +37,7 @@ public final class DebugUtil {
                 }
 
                 // recreate test database
-                final PlacemarkCollection placemarkCollection = (/*@Sink(DATABASE)*/ PlacemarkCollection) new PlacemarkCollection();
+                final @Sink("DATABASE") PlacemarkCollection placemarkCollection = (/*@Sink("DATABASE")*/ PlacemarkCollection) new PlacemarkCollection();
                 for (int pci = 15; pci >= 0; --pci) {
                     placemarkCollection.setId(0);
                     placemarkCollection.setName("Placemark Collection '" + pci + '\'');

@@ -38,20 +38,20 @@ public class ProgressDialogInputStream extends /*@PolySourceR @Sink(DISPLAY)*/ F
     }
 
     @Override
-    public int read(byte [] buffer) throws IOException {
+    public @Sink(DISPLAY) int read(byte [] buffer) throws IOException {
         return this.read(buffer, 0, buffer.length);
     }
 
     @Override
     public @Sink(DISPLAY) int read(byte [] buffer, @Sink({}) int byteOffset, @Sink({}) int byteCount) throws IOException {
-        final @Sink(DISPLAY) int count = super.read(buffer, byteOffset, byteCount);
+        final @Sink(DISPLAY) int count = (/*@Sink(DISPLAY)*/ int) super.read(buffer, byteOffset, byteCount);
         if (count >= 0) progressDialog.incrementProgressBy(count);
         return count;
     }
 
     @Override
     public @Sink(DISPLAY) long skip(long byteCount) throws IOException {
-        final @Sink(DISPLAY) long count = super.skip(byteCount);
+        final @Sink(DISPLAY) long count = (/*@Sink(DISPLAY)*/ long) super.skip(byteCount);
         if (count >= 0) progressDialog.incrementProgressBy((int) count);
         return count;
     }

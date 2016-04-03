@@ -17,7 +17,7 @@ import static sparta.checkers.quals.FlowPermissionString.*;
  */
 public class KmlImporter extends AbstractXmlImporter {
 
-    private double latitude, longitude;
+    private @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) double latitude, longitude;
     private @Source({}) int coordinateCount;
 
     @Override
@@ -34,7 +34,7 @@ public class KmlImporter extends AbstractXmlImporter {
     @Override
     protected void handleEndTag() throws IOException {
         if (placemark == null) {
-            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String hrefMatcher = "href";
+            @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) String hrefMatcher = (/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ String) "href";
             if (hrefMatcher.equals(tag) && checkCurrentPath("kml", "Document", "NetworkLink", "Url")) {
                 final String href = text;
                 final AbstractImporter delegateImporter = ImporterFacade.createImporter(href);

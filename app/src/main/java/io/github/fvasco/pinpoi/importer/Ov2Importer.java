@@ -42,7 +42,7 @@ public class Ov2Importer extends AbstractImporter {
             if (rectype == 2 || rectype == 3) {
                 final int total = readIntLE(dataInputStream);
                 Log.i(Ov2Importer.class.getSimpleName(), "Process record type " + rectype + " total " + total);
-                @Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET}) int nameLength = total - 14;
+                int nameLength = total - 14;
 
                 // read lon, lat
                 // coordinate format: int*100000

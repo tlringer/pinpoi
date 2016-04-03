@@ -42,7 +42,8 @@ import static sparta.checkers.quals.FlowPermissionString.*;
  *
  * @author Francesco Vasco
  */
-public /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ class ImporterFacade implements /*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Consumer</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark> {
+/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/
+public class ImporterFacade implements /*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Consumer</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ Placemark> {
 
     /**
      * Signpost for end of elaboration
@@ -148,7 +149,7 @@ public /*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ class ImporterFac
                 throw new IOException("Cannot import " + resource);
             }
             importer.setCollectionId(placemarkCollection.getId());
-            importer.setConsumer(this);
+            importer.setConsumer((/*@Sink({DATABASE, FILESYSTEM, WRITE_LOGS, INTERNET})*/ ImporterFacade) this);
 
             // insert new placemark
             final Future</*@Source({})*/ Void> importFuture = Util.EXECUTOR.submit((/*@Source({})*/ Callable<Void>) new Callable</*@Source({})*/ Void>() {

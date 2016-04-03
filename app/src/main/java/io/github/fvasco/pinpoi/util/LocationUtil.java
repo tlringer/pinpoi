@@ -12,6 +12,8 @@ import com.acg.lib.model.Location;
 import io.github.fvasco.pinpoi.BuildConfig;
 import io.github.fvasco.pinpoi.model.PlacemarkBase;
 import sparta.checkers.quals.PolyFlowReceiver;
+import sparta.checkers.quals.PolySinkR;
+import sparta.checkers.quals.PolySourceR;
 import sparta.checkers.quals.Source;
 
 import java.io.*;
@@ -21,8 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
-import static sparta.checkers.quals.FlowPermissionString.FILESYSTEM;
 
 /**
  * Location related utility
@@ -35,9 +35,9 @@ public class LocationUtil {
     /**
      * Store resolved address
      */
-    private static final @Source(FILESYSTEM) LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String> ADDRESS_CACHE =
-            (/*@Source(FILESYSTEM)*/ LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String>)
-                    new /*@Source(FILESYSTEM)*/ LruCache</*@Source(FILESYSTEM)*/ Coordinates, /*@Source(FILESYSTEM)*/ String>(512);
+    private static final @PolySourceR @PolySinkR LruCache</*@PolySourceR @PolySinkR*/ Coordinates, /*@PolySourceR @PolySinkR*/ String> ADDRESS_CACHE =
+            (/*@PolySourceR @PolySinkR*/ LruCache</*@PolySourceR @PolySinkR*/ Coordinates, /*@PolySourceR @PolySinkR*/ String>)
+                    new /*@PolySourceR @PolySinkR*/ LruCache</*@PolySourceR @PolySinkR*/ Coordinates, /*@PolySourceR @PolySinkR*/ String>(512);
     private static @Source({}) Geocoder geocoder;
     private static volatile @Source({}) File addressCacheFile;
 

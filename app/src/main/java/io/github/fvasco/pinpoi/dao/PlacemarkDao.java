@@ -192,8 +192,11 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
             whereArgs.add(nameFilter);
         }
 
-        final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) DistanceComparator locationComparator =
-                (/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ DistanceComparator) new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ DistanceComparator(coordinates);
+        final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) Comparator</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Coordinates> locationComparator =
+                (/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Comparator</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ Coordinates>)
+                        new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ DistanceComparator(coordinates);
+
+
         final @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) SortedSet</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult> res =
                 (/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ TreeSet</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult>)
                         new /*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ TreeSet</*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ PlacemarkSearchResult>(locationComparator);
@@ -202,7 +205,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
             double maxDistance = range;
             while (!cursor.isAfterLast()) {
                 final PlacemarkSearchResult p = cursorToPlacemarkSearchResult(cursor);
-                if (locationComparator.calculateDistance(p) <= maxDistance
+                if (((/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ DistanceComparator) locationComparator).calculateDistance(p) <= maxDistance
                         && (SQL_INSTR_PRESENT || nameFilter == null || p.getName().toUpperCase().contains(nameFilter))) {
                     res.add(p);
                     // ensure size limit, discard farest
@@ -210,7 +213,7 @@ public class PlacemarkDao extends AbstractDao<PlacemarkDao> {
                         final PlacemarkSearchResult placemarkToDiscard = res.last();
                         res.remove(placemarkToDiscard);
                         // update search range to search closer
-                        maxDistance = locationComparator.calculateDistance(res.last());
+                        maxDistance = ((/*@Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"})*/ DistanceComparator) locationComparator).calculateDistance(res.last());
                     }
                 }
                 cursor.moveToNext();

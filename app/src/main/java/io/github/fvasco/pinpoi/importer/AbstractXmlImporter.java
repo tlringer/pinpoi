@@ -88,7 +88,7 @@ public abstract class AbstractXmlImporter extends AbstractImporter {
     /**
      * Check if current path match given tags, except current tag in {@linkplain #tag}
      */
-    protected @Source({}) boolean checkCurrentPath(final @Source({}) String... tags) {
+    protected @Source({}) boolean checkCurrentPath(final @Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"}) String... tags) {
         if (tags.length != tagStack.size() - 1) return false;
         final Iterator</*@Sink({"DATABASE", "FILESYSTEM", "WRITE_LOGS", "INTERNET"})*/ String> iterator = tagStack.descendingIterator();
         for (int i = tags.length - 1; i >= 0; --i) {

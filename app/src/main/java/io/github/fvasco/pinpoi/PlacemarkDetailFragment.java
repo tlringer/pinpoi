@@ -63,7 +63,7 @@ public class PlacemarkDetailFragment extends Fragment {
     private @Source({}) TextView collectionDescriptionTitle;
     private @Source({}) TextView collectionDescriptionText;
     private @Source({}) TextView addressText;
-    private @Source("DATABASE") Future</*@Source({})*/ String> searchAddressFuture;
+    private @Source({"DATABASE", "FILESYSTEM"}) Future</*@Source({})*/ String> searchAddressFuture;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

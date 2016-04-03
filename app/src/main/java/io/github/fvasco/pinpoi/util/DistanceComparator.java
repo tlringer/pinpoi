@@ -17,7 +17,8 @@ import java.util.Objects;
 public class DistanceComparator implements Comparator</*@PolySourceR @PolySinkR*/ Coordinates> {
 
     private final @PolySourceR @PolySinkR  Coordinates center;
-    private final @PolySourceR @PolySinkR  float /*@PolySourceR @PolySinkR*/ [] distanceResult = new /*@PolySourceR @PolySinkR*/ float /*@PolySourceR @PolySinkR*/ [1];
+    private final @PolySourceR @PolySinkR  float /*@PolySourceR @PolySinkR*/ [] distanceResult =
+            (/*@PolySourceR @PolySinkR*/  float /*@PolySourceR @PolySinkR*/ []) new /*@PolySourceR @PolySinkR*/ float /*@PolySourceR @PolySinkR*/ [1];
 
     public DistanceComparator(Coordinates center) {
         Objects.requireNonNull(center);

@@ -85,8 +85,8 @@ public class MainActivity extends /*@Source({})*/ AppCompatActivity
     private @Source({}) CheckBox favouriteCheck;
     private @Source({}) CheckBox showMapCheck;
     private @Source({}) TextView rangeLabel;
-    private @Source({}) Geocoder geocoder;
-    private Future</*@Source({})*/ ?> futureSearchAddress;
+    private @Source({}) @Sink({}) Geocoder geocoder;
+    private @Source("FILESYSTEM") Future</*@Source({})*/ ?> futureSearchAddress;
     private @Source({}) boolean locationEnabled = false;
 
     /**
