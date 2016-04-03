@@ -2,21 +2,20 @@ package io.github.fvasco.pinpoi.util;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import sparta.checkers.quals.*;
+import sparta.checkers.quals.Sink;
+import sparta.checkers.quals.Source;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static sparta.checkers.quals.FlowPermissionString.DISPLAY;
-
 /**
  * Input stream that control a progress dialog
  *
  * @author Francesco Vasco
  */
-public class ProgressDialogInputStream extends /*@PolySourceR @Sink(DISPLAY)*/ FilterInputStream implements /*@PolySourceR @Sink(DISPLAY)*/ DialogInterface.OnCancelListener {
+public class ProgressDialogInputStream extends FilterInputStream implements DialogInterface.OnCancelListener {
     private final @Source({}) ProgressDialog progressDialog;
 
     public ProgressDialogInputStream(final InputStream in, @Source({}) final ProgressDialog progressDialog) {
@@ -38,21 +37,21 @@ public class ProgressDialogInputStream extends /*@PolySourceR @Sink(DISPLAY)*/ F
     }
 
     @Override
-    public @Sink(DISPLAY) int read(byte [] buffer) throws IOException {
+    public int read(byte [] buffer) throws IOException {
         return this.read(buffer, 0, buffer.length);
     }
 
     @Override
-    public @Sink(DISPLAY) int read(byte [] buffer, @Sink({}) int byteOffset, @Sink({}) int byteCount) throws IOException {
-        final @Sink(DISPLAY) int count = (/*@Sink(DISPLAY)*/ int) super.read(buffer, byteOffset, byteCount);
-        if (count >= 0) progressDialog.incrementProgressBy(count);
+    public int read(byte [] buffer, @Sink({}) int byteOffset, @Sink({}) int byteCount) throws IOException {
+        final int count = super.read(buffer, byteOffset, byteCount);
+        if (count >= 0) progressDialog.incrementProgressBy((/*@Sink("DISPLAY")*/ int) count);
         return count;
     }
 
     @Override
-    public @Sink(DISPLAY) long skip(long byteCount) throws IOException {
-        final @Sink(DISPLAY) long count = (/*@Sink(DISPLAY)*/ long) super.skip(byteCount);
-        if (count >= 0) progressDialog.incrementProgressBy((int) count);
+    public long skip(long byteCount) throws IOException {
+        final long count = super.skip(byteCount);
+        if (count >= 0) progressDialog.incrementProgressBy((/*@Sink("DISPLAY")*/ int) count);
         return count;
     }
 
