@@ -496,11 +496,6 @@ public class PlacemarkListActivity extends /*@Source({})*/ AppCompatActivity {
                 super(view);
                 this.view = (TextView) view.findViewById(android.R.id.text1);
             }
-
-            @Override
-            public @Source({"DATABASE", "INTENT", "SHARED_PREFERENCES"}) String toString() {
-                return super.toString() + " '" + placemark + "'";
-            }
         }
     }
 

@@ -63,9 +63,4 @@ public class Coordinates implements Cloneable {
         Location.distanceBetween(latitude, longitude, other.latitude, other.longitude, result);
         return result[0];
     }
-
-    @Override
-    public String toString() {
-        return Float.toString(latitude) + ',' + Float.toString(longitude);
-    }
 }
